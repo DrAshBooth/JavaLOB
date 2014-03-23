@@ -27,6 +27,64 @@ public class Order {
 	public String toString() {
         return quantity + "\t@\t" + price + "\tt=" + timestamp;
     }
+
+	
+	// Getters and Setters
+	public Order getNextOrder() {
+		return nextOrder;
+	}
+
+	public void setNextOrder(Order nextOrder) {
+		this.nextOrder = nextOrder;
+	}
+
+	public Order getPrevOrder() {
+		return prevOrder;
+	}
+
+	public void setPrevOrder(Order prevOrder) {
+		this.prevOrder = prevOrder;
+	}
+
+	public Integer getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Integer timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public Integer getqId() {
+		return qId;
+	}
+
+	public void setqId(Integer qId) {
+		this.qId = qId;
+	}
+
+	public Integer gettId() {
+		return tId;
+	}
+
+	public void settId(Integer tId) {
+		this.tId = tId;
+	}
 	
 	
 	
