@@ -12,16 +12,20 @@ public class Order {
 	private Order prevOrder;
 	private OrderList oL;
 	
-	public Order(HashMap<String,String> quote) {
+	public Order(HashMap<String,String> quote, OrderList ol) {
 		this.timestamp = Integer.parseInt(quote.get("timestamp"));
 		this.quantity = Integer.parseInt(quote.get("quantity"));
 		this.price = Double.parseDouble(quote.get("price"));
 		this.qId = Integer.parseInt(quote.get("qId"));
 		this.tId = Integer.parseInt(quote.get("tId"));
+		this.oL = ol;
 	}
 	
 	public void updateQty(Integer qty, Integer tstamp) {
-		if ((qty > this.quantity) && this.oL.getTailOrder() != this) {
+		System.out.println(this.quantity);
+		System.out.println(this.oL.getTailOrder());
+		System.out.println(this);
+		if ((qty > this.quantity) && (this.oL.getTailOrder() != this)) {
 			// Move order to the end of the list. i.e. loses time priority
 			this.oL.moveTail(this);
 		}

@@ -45,6 +45,7 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	  
 	// This method implements Iterable.
 	public Iterator<Order> iterator() {
+		this.last = headOrder;
 		return this;
 	}
 	
@@ -60,6 +61,8 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 			tailOrder.setNextOrder(incomingOrder);
 			tailOrder = incomingOrder;
 		}
+		length+=1;
+		volume+=incomingOrder.getQuantity();
 	}
 	
 	public void removeOrder(Order order) {
@@ -83,6 +86,9 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	}
 	
 	public void moveTail(Order order) {
+		/*
+		 * Move 'order' to the tail of the list (after modification for e.g.)
+		 */
 		if (order.getPrevOrder() != null) {
 			order.getPrevOrder().setNextOrder(order.getNextOrder());
 		} else {
