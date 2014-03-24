@@ -10,7 +10,7 @@ public class Order {
 	private Integer tId;
 	private Order nextOrder;
 	private Order prevOrder;
-	// private Orderlist oL;
+	private OrderList oL;
 	
 	public Order(HashMap<String,String> quote) {
 		this.timestamp = Integer.parseInt(quote.get("timestamp"));
@@ -20,8 +20,14 @@ public class Order {
 		this.tId = Integer.parseInt(quote.get("tId"));
 	}
 	
-	public static void updateQty(Integer qty, Integer timestamp) {
-		
+	public void updateQty(Integer qty, Integer tstamp) {
+		if ((qty > this.quantity) && this.oL.getTailOrder() != this) {
+			// Move order to the end of the list. i.e. loses time priority
+			this.oL.moveTail(this);
+		}
+		oL.setVolume(oL.getVolume()-(this.quantity-qty));
+		this.timestamp = tstamp;
+		this.quantity = qty;
 	}
 	
 	public String toString() {

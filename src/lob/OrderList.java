@@ -1,6 +1,13 @@
 package lob;
 
-public class OrderList {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class OrderList implements Iterable<Order>, Iterator<Order>{
+	/*
+	 * This class create a sorted, iterable list or orders for each price  level
+	 * in the order tree.
+	 */
 	private Order headOrder;
 	private Order tailOrder;
 	private Integer length;
@@ -15,8 +22,31 @@ public class OrderList {
 		last = null;
 	}
 	
-	// http://www.java2s.com/Tutorial/Java/0140__Collections/CreatingIterableObjectsusingaforeachforlooponanIterableobject.htm
+	// The next three methods implement Iterator.
+	public boolean hasNext() {
+		if (this.last==null){
+			return false;
+	    }  
+	    return true;
+	}
+	
+	public Order next() {
+	    if (this.last == null) {
+	    	throw new NoSuchElementException();
+	    }
+	    Order returnVal = this.last;
+	    this.last = this.last.getNextOrder();
+	    return returnVal;
+	}
 
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+	  
+	// This method implements Iterable.
+	public Iterator<Order> iterator() {
+		return this;
+	}
 	
 	public void appendOrder(Order incomingOrder) {
 		if (length == 0) {
@@ -68,10 +98,11 @@ public class OrderList {
 	}
 	
 	public String toString() {
-		String outSting = "";
+		String outString = "";
 		for (Order o : this) {
-			
+			outString += (o.toString()+"\n");
 		}
+		return outString;
 	}
 	
 	
@@ -82,6 +113,22 @@ public class OrderList {
 
 	public Order getHeadOrder() {
 		return headOrder;
+	}
+
+	public Order getTailOrder() {
+		return tailOrder;
+	}
+
+	public void setTailOrder(Order tailOrder) {
+		this.tailOrder = tailOrder;
+	}
+
+	public Integer getVolume() {
+		return volume;
+	}
+
+	public void setVolume(Integer volume) {
+		this.volume = volume;
 	}
 	
 }
