@@ -48,7 +48,7 @@ public class Simulation {
 		System.out.println("\nState of book:");
 		System.out.println("OrderList has " + testOL.getLength() + " orders");
 		System.out.println(testOL);
-
+		
 		System.out.println("\nFinished simulation...");
 	}
 	

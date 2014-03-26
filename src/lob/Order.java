@@ -22,9 +22,6 @@ public class Order {
 	}
 	
 	public void updateQty(Integer qty, Integer tstamp) {
-		System.out.println(this.quantity);
-		System.out.println(this.oL.getTailOrder());
-		System.out.println(this);
 		if ((qty > this.quantity) && (this.oL.getTailOrder() != this)) {
 			// Move order to the end of the list. i.e. loses time priority
 			this.oL.moveTail(this);
