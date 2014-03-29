@@ -30,6 +30,14 @@ public class Simulation {
 		quoteNew.put("qId", "1");
 		quoteNew.put("tId", "101");
 		
+		//Create another quote
+		HashMap<String, String> quoteNewAg = new HashMap<String, String>();
+		quoteNewAg.put("timestamp", "3");
+		quoteNewAg.put("quantity", "15");
+		quoteNewAg.put("price", "17.4");
+		quoteNewAg.put("qId", "2");
+		quoteNewAg.put("tId", "107");
+		
 		// generate order from HashMap
 		Order testOrderNew = new Order(quoteNew, testOL);
 		
@@ -48,6 +56,24 @@ public class Simulation {
 		System.out.println("\nState of book:");
 		System.out.println("OrderList has " + testOL.getLength() + " orders");
 		System.out.println(testOL);
+		
+		System.out.println("Remove second order:");
+		testOL.removeOrder(testOrderNew);
+		
+		System.out.println("\nState of book:");
+		System.out.println("OrderList has " + testOL.getLength() + " orders");
+		System.out.println(testOL);
+		
+//		// Create an asks book
+//		OrderTree asks = new OrderTree();
+//		
+//		// insert
+//		System.out.println("Adding three orders...");
+//		asks.insertOrder(quote);
+//		asks.insertOrder(quoteNew);
+//		asks.insertOrder(quoteNewAg);
+//		
+//		System.out.println(asks);
 		
 		System.out.println("\nFinished simulation...");
 	}

@@ -8,19 +8,11 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	 * This class create a sorted, iterable list or orders for each price  level
 	 * in the order tree.
 	 */
-	private Order headOrder;
-	private Order tailOrder;
-	private Integer length;
-	private Integer volume;    // Total volume at this price level
-	private Order last;
-	
-	public OrderList() {
-		headOrder = null;
-		tailOrder = null;
-		length = 0;
-		volume = 0;
-		last = null;
-	}
+	private Order headOrder = null;;
+	private Order tailOrder = null;;
+	private Integer length = 0;
+	private Integer volume = 0;    // Total volume at this price level
+	private Order last = null;
 	
 	// The next three methods implement Iterator.
 	public boolean hasNext() {

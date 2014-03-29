@@ -92,6 +92,10 @@ public class Order {
 	public void settId(Integer tId) {
 		this.tId = tId;
 	}
+
+	public OrderList getoL() {
+		return oL;
+	}
 	
 	
 	

@@ -1,12 +1,13 @@
 package lob;
 
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
 
 public class OrderTree {
-	TreeMap<Double, OrderList> priceTree;
-	HashMap<Double, OrderList> priceMap;
-	HashMap<Integer, Order> orderMap;
+	TreeMap<Double, OrderList> priceTree = new TreeMap<Double, OrderList>();
+	HashMap<Double, OrderList> priceMap = new HashMap<Double, OrderList>();;
+	HashMap<Integer, Order> orderMap = new HashMap<Integer, Order>();
 	Integer volume;
 	Integer nOrders;
 	Integer depth;
@@ -73,11 +74,76 @@ public class OrderTree {
 	}
 	
 	public void updateOrder(HashMap<String, String> orderUpdate) {
-		
+		Integer idNum = Integer.parseInt(orderUpdate.get("qId"));
+		Double price = Double.parseDouble(orderUpdate.get("price"));
+		Order order = this.orderMap.get(idNum);
+		Integer originalVol = order.getQuantity();
+		if (price != order.getPrice()) {
+			// Price has been updated
+			OrderList tempOL = this.priceMap.get(price);
+			tempOL.removeOrder(order);
+			if (tempOL.getLength()==0) {
+				removePrice(order.getPrice());
+			}
+			insertOrder(orderUpdate);
+		} else {
+			// The quantity has changed
+			order.updateQty(Integer.parseInt(orderUpdate.get("quantity")), 
+					Integer.parseInt(orderUpdate.get("timestamp")));
+		}
+		this.volume += (order.getQuantity() - originalVol);
 	}
 	
 	public void removeOrderByID(Integer id) {
-		
+		this.nOrders -=1;
+		Order order = orderMap.get(id);
+		this.volume -= order.getQuantity();
+		order.getoL().removeOrder(order);
+		if (order.getoL().getLength() == 0) {
+			this.removePrice(order.getPrice());
+		}
+		this.orderMap.remove(id);
+	}
+	
+	public Double maxPrice() {
+		if (this.depth>0) {
+			return this.priceTree.lastKey();
+		} else {
+			return null;
+		}
+	}
+	
+	public Double minPrice() {
+		if (this.depth>0) {
+			return this.priceTree.firstKey();
+		} else {
+			return null;
+		}
+	}
+	
+	public OrderList maxPriceList() {
+		if (this.depth>0) {
+			return this.getPriceList(maxPrice());
+		} else {
+			return null;
+		}
+	}
+	
+	public OrderList minPriceList() {
+		if (this.depth>0) {
+			return this.getPriceList(minPrice());
+		} else {
+			return null;
+		}
+	}
+	
+	public String toString() {
+		String outString = "";
+		for (Map.Entry<Double, OrderList> entry : this.priceTree.entrySet()) {
+			outString += ("\n" + entry.getKey() + ":\n");
+			outString += entry.getValue().toString();
+		}
+		return outString;
 	}
 	
 }
