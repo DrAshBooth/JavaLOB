@@ -10,8 +10,8 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	 */
 	private Order headOrder = null;;
 	private Order tailOrder = null;;
-	private Integer length = 0;
-	private Integer volume = 0;    // Total volume at this price level
+	private int length = 0;
+	private int volume = 0;    // Total volume at this price level
 	private Order last = null;
 	
 	// The next three methods implement Iterator.
@@ -102,7 +102,6 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 		}
 		return outString;
 	}
-	
 	
 	
 	public Integer getLength() {

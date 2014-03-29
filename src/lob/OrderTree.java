@@ -8,9 +8,9 @@ public class OrderTree {
 	TreeMap<Double, OrderList> priceTree = new TreeMap<Double, OrderList>();
 	HashMap<Double, OrderList> priceMap = new HashMap<Double, OrderList>();;
 	HashMap<Integer, Order> orderMap = new HashMap<Integer, Order>();
-	Integer volume;
-	Integer nOrders;
-	Integer depth;
+	int volume;
+	int nOrders;
+	int depth;
 	
 	public OrderTree() {
 		volume = 0;
@@ -22,44 +22,44 @@ public class OrderTree {
 		return orderMap.size();
 	}
 	
-	public OrderList getPriceList(Double price) {
+	public OrderList getPriceList(double price) {
 		/*
 		 * Returns the OrderList object associated with 'price'
 		 */
 		return priceMap.get(price);
 	}
 	
-	public Order getOrder(Integer id) {
+	public Order getOrder(int id) {
 		/*
 		 * Returns the order given the order id
 		 */
 		return orderMap.get(id);
 	}
 	
-	public void createPrice(Double price) {
+	public void createPrice(double price) {
 		depth += 1;
 		OrderList newList = new OrderList();
 		priceTree.put(price, newList);
 		priceMap.put(price, newList);
 	}
 	
-	public void removePrice(Double price) {
+	public void removePrice(double price) {
 		depth -= 1;
 		priceTree.remove(price);
 		priceMap.remove(price);
 	}
 	
-	public boolean priceExists(Double price) {
+	public boolean priceExists(double price) {
 		return priceMap.containsKey(price);
 	}
 	
-	public boolean orderExists(Integer id) {
+	public boolean orderExists(int id) {
 		return orderMap.containsKey(id);
 	}
 	
 	public void insertOrder(HashMap<String, String> quote) {
-		Integer quoteID = Integer.parseInt(quote.get("qId"));
-		Double quotePrice = Double.parseDouble(quote.get("price"));
+		int quoteID = Integer.parseInt(quote.get("qId"));
+		double quotePrice = Double.parseDouble(quote.get("price"));
 		if (orderExists(quoteID)) {
 			removeOrderByID(quoteID);
 		}
@@ -74,14 +74,13 @@ public class OrderTree {
 	}
 	
 	public void updateOrder(HashMap<String, String> orderUpdate) {
-		Integer idNum = Integer.parseInt(orderUpdate.get("qId"));
-		Double price = Double.parseDouble(orderUpdate.get("price"));
+		int idNum = Integer.parseInt(orderUpdate.get("qId"));
+		double price = Double.parseDouble(orderUpdate.get("price"));
 		Order order = this.orderMap.get(idNum);
-		Integer originalVol = order.getQuantity();
+		int originalVol = order.getQuantity();
 		if (price != order.getPrice()) {
 			// Price has been updated
-			OrderList tempOL = this.priceMap.get(price);
-			tempOL.removeOrder(order);
+			OrderList tempOL = this.priceMap.get(order.getPrice());
 			if (tempOL.getLength()==0) {
 				removePrice(order.getPrice());
 			}
@@ -94,7 +93,7 @@ public class OrderTree {
 		this.volume += (order.getQuantity() - originalVol);
 	}
 	
-	public void removeOrderByID(Integer id) {
+	public void removeOrderByID(int id) {
 		this.nOrders -=1;
 		Order order = orderMap.get(id);
 		this.volume -= order.getQuantity();
@@ -138,12 +137,24 @@ public class OrderTree {
 	}
 	
 	public String toString() {
-		String outString = "";
+		String outString = "The Book:\n";
 		for (Map.Entry<Double, OrderList> entry : this.priceTree.entrySet()) {
 			outString += ("\n" + entry.getKey() + ":\n");
 			outString += entry.getValue().toString();
 		}
 		return outString;
+	}
+
+	public Integer getVolume() {
+		return volume;
+	}
+
+	public Integer getnOrders() {
+		return nOrders;
+	}
+
+	public Integer getDepth() {
+		return depth;
 	}
 	
 }

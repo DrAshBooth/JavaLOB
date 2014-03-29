@@ -3,11 +3,11 @@ package lob;
 import java.util.HashMap;
 
 public class Order {
-	private Integer timestamp;
-	private Integer quantity;
-	private Double price;
-	private Integer qId;
-	private Integer tId;
+	private int timestamp;
+	private int quantity;
+	private double price;
+	private int qId;
+	private int tId;
 	private Order nextOrder;
 	private Order prevOrder;
 	private OrderList oL;
@@ -21,7 +21,7 @@ public class Order {
 		this.oL = ol;
 	}
 	
-	public void updateQty(Integer qty, Integer tstamp) {
+	public void updateQty(int qty, int tstamp) {
 		if ((qty > this.quantity) && (this.oL.getTailOrder() != this)) {
 			// Move order to the end of the list. i.e. loses time priority
 			this.oL.moveTail(this);
@@ -32,7 +32,8 @@ public class Order {
 	}
 	
 	public String toString() {
-        return quantity + "\t@\t" + price + "\tt=" + timestamp;
+        return Integer.toString(quantity) + "\t@\t" + Double.toString(price) + 
+        		"\tt=" + Integer.toString(timestamp);
     }
 
 	
@@ -57,39 +58,39 @@ public class Order {
 		return timestamp;
 	}
 
-	public void setTimestamp(Integer timestamp) {
+	public void setTimestamp(int timestamp) {
 		this.timestamp = timestamp;
 	}
 
-	public Integer getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
 
-	public Double getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Double price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 
-	public Integer getqId() {
+	public int getqId() {
 		return qId;
 	}
 
-	public void setqId(Integer qId) {
+	public void setqId(int qId) {
 		this.qId = qId;
 	}
 
-	public Integer gettId() {
+	public int gettId() {
 		return tId;
 	}
 
-	public void settId(Integer tId) {
+	public void settId(int tId) {
 		this.tId = tId;
 	}
 
