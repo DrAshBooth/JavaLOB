@@ -72,6 +72,10 @@ public class OrderTree {
 		volume += o.getQuantity();
 	}
 	
+	public void updateOrder(HashMap<String, String> orderUpdate) {
+		
+	}
+	
 	public void removeOrderByID(Integer id) {
 		
 	}
