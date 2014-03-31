@@ -39,29 +39,23 @@ public class Simulation {
 		asks.insertOrder(quote);
 		asks.insertOrder(quoteNew);
 		asks.insertOrder(quoteNewAg);
-		
-		printState(asks);
+		System.out.println(asks);
 		
 		// update
 		System.out.println("Updating order...");
 		quote.put("quantity", "123");
 		quote.put("price", "17");
 		asks.updateOrder(quote);
+		System.out.println(asks);
 		
-		printState(asks);
+		// remove
+		System.out.println("Removing order @ 17.0...");
+		asks.removeOrderByID(0);
+		System.out.println(asks);
 		
 		System.out.println("\nFinished simulation...");
 	}
 	
-	public static void printState(OrderTree book) {
-		System.out.println("Max price = " + book.maxPrice());
-		System.out.println("Min price = " + book.minPrice());
-		System.out.println("Volume in book = " + book.getVolume());
-		System.out.println("Depth of book = " + book.getDepth());
-		System.out.println("Orders in book = " + book.getnOrders());
-		System.out.println("Length of tree = " + book.length());
-		System.out.println(book);
-	}
 	
 	public static void main(String[] args) {
 		run();

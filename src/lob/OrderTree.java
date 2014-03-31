@@ -137,7 +137,13 @@ public class OrderTree {
 	}
 	
 	public String toString() {
-		String outString = "The Book:\n";
+		String outString = "The Book:\n" + 
+							"Max price = " + maxPrice() +
+							"\nMin price = " + minPrice() +
+							"\nVolume in book = " + getVolume() +
+							"\nDepth of book = " + getDepth() +
+							"\nOrders in book = " + getnOrders() +
+							"\nLength of tree = " + length();
 		for (Map.Entry<Double, OrderList> entry : this.priceTree.entrySet()) {
 			outString += ("\n" + entry.getKey() + ":\n");
 			outString += entry.getValue().toString();
