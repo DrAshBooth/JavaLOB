@@ -22,7 +22,7 @@ public class Trade {
 	
 	
 	
-	public String toSting() {
+	public String toString() {
 		return ("TRADE \n t= " + timestamp + 
 				"\nprice = " + price +
 				"\nquantity = " + qty +
@@ -30,5 +30,47 @@ public class Trade {
 				"\nTaker = " + taker +
 				"\nBuyer = " + buyer +
 				"\nSeller = " + seller);
+	}
+
+
+
+	public int getTimestamp() {
+		return timestamp;
+	}
+
+
+
+	public double getPrice() {
+		return price;
+	}
+
+
+
+	public int getQty() {
+		return qty;
+	}
+
+
+
+	public int getProvider() {
+		return provider;
+	}
+
+
+
+	public int getTaker() {
+		return taker;
+	}
+
+
+
+	public int getBuyer() {
+		return buyer;
+	}
+
+
+
+	public int getSeller() {
+		return seller;
 	}
 }
