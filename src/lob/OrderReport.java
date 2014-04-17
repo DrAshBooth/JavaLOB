@@ -20,14 +20,14 @@ public class OrderReport {
 	}
 	
 	public String toString() {
-		String retString = "";
+		String retString = "--- Order Report ---:\nTrades:\n";
 		for (Trade t : trades) {
 			retString += ("\n" + t.toString());
 		}
 		retString += ("order in book? " + orderInBook + "\n");
-		retString+= ("\nOrder IDs:\n");
+		retString+= ("\nOrders:\n");
 		retString += (order.toString());
-		return  retString + "\n";
+		return  retString + "\n--------------------------";
 	}
 
 	public HashMap<String, String> getOrders() {

@@ -23,13 +23,13 @@ public class Trade {
 	
 	
 	public String toString() {
-		return ("TRADE \n t= " + timestamp + 
-				"\nprice = " + price +
-				"\nquantity = " + qty +
-				"\nProvider = " + provider +
-				"\nTaker = " + taker +
-				"\nBuyer = " + buyer +
-				"\nSeller = " + seller);
+		return ("\n| TRADE \n| \tt= " + timestamp + 
+				"\n| \tprice = " + price +
+				"\n| \tquantity = " + qty +
+				"\n| \tProvider = " + provider +
+				"\n| \tTaker = " + taker +
+				"\n| \tBuyer = " + buyer +
+				"\n| \tSeller = " + seller);
 	}
 
 

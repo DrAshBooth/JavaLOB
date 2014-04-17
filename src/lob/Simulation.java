@@ -7,55 +7,104 @@ public class Simulation {
 	public static void run() {
 		System.out.println("Beginning simulation...\n");
 		
-		// create a quote (as a HashMap)
+		// create quotes
 		HashMap<String, String> quote = new HashMap<String, String>();
 		quote.put("timestamp", "1");
-		quote.put("quantity", "10");
+		quote.put("type", "limit");
+		quote.put("side", "offer");
+		quote.put("quantity", "2");
 		quote.put("price", "17.4");
-		quote.put("qId", "0");
 		quote.put("tId", "100");
 		
-		//Create another quote
-		HashMap<String, String> quoteNew = new HashMap<String, String>();
-		quoteNew.put("timestamp", "2");
-		quoteNew.put("quantity", "15");
-		quoteNew.put("price", "17.8");
-		quoteNew.put("qId", "1");
-		quoteNew.put("tId", "101");
+		HashMap<String, String> quote1 = new HashMap<String, String>();
+		quote1.put("timestamp", "2");
+		quote1.put("type", "limit");
+		quote1.put("side", "offer");
+		quote1.put("quantity", "10");
+		quote1.put("price", "17.4");
+		quote1.put("tId", "101");
 		
-		//Create another quote
-		HashMap<String, String> quoteNewAg = new HashMap<String, String>();
-		quoteNewAg.put("timestamp", "3");
-		quoteNewAg.put("quantity", "15");
-		quoteNewAg.put("price", "17.4");
-		quoteNewAg.put("qId", "2");
-		quoteNewAg.put("tId", "107");
+		HashMap<String, String> quote2 = new HashMap<String, String>();
+		quote2.put("timestamp", "3");
+		quote2.put("type", "limit");
+		quote2.put("side", "offer");
+		quote2.put("quantity", "15");
+		quote2.put("price", "17.6");
+		quote2.put("tId", "102");
 		
-		// Create an asks book
-		OrderTree asks = new OrderTree();
+		HashMap<String, String> quote3 = new HashMap<String, String>();
+		quote3.put("timestamp", "4");
+		quote3.put("type", "limit");
+		quote3.put("side", "bid");
+		quote3.put("quantity", "5");
+		quote3.put("price", "16.899999");
+		quote3.put("tId", "103");
 		
-		// insert
-		System.out.println("Adding three orders...");
-		asks.insertOrder(quote);
-		asks.insertOrder(quoteNew);
-		asks.insertOrder(quoteNewAg);
-		System.out.println(asks);
+		HashMap<String, String> quote4 = new HashMap<String, String>();
+		quote4.put("timestamp", "5");
+		quote4.put("type", "limit");
+		quote4.put("side", "bid");
+		quote4.put("quantity", "5");
+		quote4.put("price", "16.9");
+		quote4.put("tId", "104");
 		
-		// update
-		System.out.println("Updating order...");
-		quote.put("quantity", "123");
-		quote.put("price", "17");
-		asks.updateOrder(quote);
-		System.out.println(asks);
+		// instantiate order book
+		OrderBook lob = new OrderBook(0.01);
 		
-		// remove
-		System.out.println("Removing order @ 17.0...");
-		asks.removeOrderByID(0);
-		System.out.println(asks);
+		// View empty book
+		print("\n...empty book...\n");
+		print(lob.toString());
 		
+		// Add non-crossing orders
+		print("\n...adding limit orders...\n");
+		lob.processOrder(quote, false);
+		lob.processOrder(quote1, false);
+		lob.processOrder(quote2, false);
+		lob.processOrder(quote3, false);
+		lob.processOrder(quote4, false);
+				
+		// View the book
+		print("\n...populated book...\n");
+		print(lob.toString());
+		
+		// Market order
+		print("\n...submitting market order...\n");
+		HashMap<String, String> quote5 = new HashMap<String, String>();
+		quote5.put("timestamp", "6");
+		quote5.put("type", "market");
+		quote5.put("side", "bid");
+		quote5.put("quantity", "1");
+		quote5.put("tId", "105");
+		
+		lob.processOrder(quote5, false);
+		
+		// View the book
+		print("\n...book after MO...\n");
+		print(lob.toString());
+		
+		
+		// Crossing limit order
+		print("\n...submitting limit order that crosses the spread...\n");
+		HashMap<String, String> quote6 = new HashMap<String, String>();
+		quote6.put("timestamp", "7");
+		quote6.put("type", "limit");
+		quote6.put("side", "bid");
+		quote6.put("price", "100000");
+		quote6.put("quantity", "3");
+		quote6.put("tId", "106");
+		
+		lob.processOrder(quote6, false);
+		
+		// View the book
+		print("\n...book after crossing limit order...\n");
+		print(lob.toString());
+
 		System.out.println("\nFinished simulation...");
 	}
 	
+	public static void print(String string) {
+		System.out.println(string);
+	}
 	
 	public static void main(String[] args) {
 		run();

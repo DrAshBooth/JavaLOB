@@ -98,7 +98,7 @@ public class OrderList implements Iterable<Order>, Iterator<Order>{
 	public String toString() {
 		String outString = "";
 		for (Order o : this) {
-			outString += (o.toString()+"\n");
+			outString += ("| " + o.toString()+"\n");
 		}
 		return outString;
 	}

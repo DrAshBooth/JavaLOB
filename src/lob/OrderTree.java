@@ -73,6 +73,13 @@ public class OrderTree {
 		volume += o.getQuantity();
 	}
 	
+	public void updateOrderQty(int qty, int qId) {
+		Order order = this.orderMap.get(qId);
+		int originalVol = order.getQuantity();
+		order.updateQty(qty, order.getTimestamp());
+		this.volume += (order.getQuantity() - originalVol);
+	}
+	
 	public void updateOrder(HashMap<String, String> orderUpdate) {
 		int idNum = Integer.parseInt(orderUpdate.get("qId"));
 		double price = Double.parseDouble(orderUpdate.get("price"));
@@ -137,16 +144,16 @@ public class OrderTree {
 	}
 	
 	public String toString() {
-		String outString = "The Book:\n" + 
-							"Max price = " + maxPrice() +
-							"\nMin price = " + minPrice() +
-							"\nVolume in book = " + getVolume() +
-							"\nDepth of book = " + getDepth() +
-							"\nOrders in book = " + getnOrders() +
-							"\nLength of tree = " + length();
+		String outString = "| The Book:\n" + 
+							"| Max price = " + maxPrice() +
+							"\n| Min price = " + minPrice() +
+							"\n| Volume in book = " + getVolume() +
+							"\n| Depth of book = " + getDepth() +
+							"\n| Orders in book = " + getnOrders() +
+							"\n| Length of tree = " + length() + "\n";
 		for (Map.Entry<Double, OrderList> entry : this.priceTree.entrySet()) {
-			outString += ("\n" + entry.getKey() + ":\n");
 			outString += entry.getValue().toString();
+			outString += ("|\n");
 		}
 		return outString;
 	}
