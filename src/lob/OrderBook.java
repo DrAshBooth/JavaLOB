@@ -182,7 +182,8 @@ public class OrderBook {
 				seller = headOrder.gettId();
 			}
 			Trade trade = new Trade(time, headOrder.getPrice(), qtyTraded, 
-									headOrder.gettId(),takerId, buyer, seller);
+									headOrder.gettId(),takerId, buyer, seller, 
+									headOrder.getqId());
 			trades.add(trade);
 			this.tape.add(trade);
 			if (verbose) {

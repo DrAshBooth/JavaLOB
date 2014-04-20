@@ -14,20 +14,10 @@ public class OrderReport {
 	private boolean orderInBook = false;
 	private HashMap<String, String> order = new HashMap<String, String>();
 	
-	public OrderReport(ArrayList<Trade> trades, boolean orderInBook) {
+	public OrderReport(ArrayList<Trade> trades, 
+					   boolean orderInBook) {
 		this.trades = trades;
 		this.orderInBook = orderInBook;
-	}
-	
-	public String toString() {
-		String retString = "--- Order Report ---:\nTrades:\n";
-		for (Trade t : trades) {
-			retString += ("\n" + t.toString());
-		}
-		retString += ("order in book? " + orderInBook + "\n");
-		retString+= ("\nOrders:\n");
-		retString += (order.toString());
-		return  retString + "\n--------------------------";
 	}
 
 	public HashMap<String, String> getOrders() {
@@ -44,6 +34,17 @@ public class OrderReport {
 
 	public void setOrder(HashMap<String, String> order) {
 		this.order = order;
+	}
+	
+	public String toString() {
+		String retString = "--- Order Report ---:\nTrades:\n";
+		for (Trade t : trades) {
+			retString += ("\n" + t.toString());
+		}
+		retString += ("order in book? " + orderInBook + "\n");
+		retString+= ("\nOrders:\n");
+		retString += (order.toString());
+		return  retString + "\n--------------------------";
 	}
 	
 }

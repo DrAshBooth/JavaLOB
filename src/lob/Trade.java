@@ -8,9 +8,10 @@ public class Trade {
 	private int taker;
 	private int buyer;
 	private int seller;
+	private int orderHit;
 	
 	public Trade(int time, double price, int qty, int provider, 
-				 int taker, int buyer, int seller) {
+				 int taker, int buyer, int seller, int orderHit) {
 		this.timestamp = time;
 		this.price = price;
 		this.qty = qty;
@@ -18,10 +19,11 @@ public class Trade {
 		this.taker = taker;
 		this.buyer = buyer;
 		this.seller = seller;
+		this.orderHit = orderHit; // the qId of the order that was in the book
 	}
 	
 	
-	
+	@Override
 	public String toString() {
 		return ("\n| TRADE \n| \tt= " + timestamp + 
 				"\n| \tprice = " + price +
@@ -72,5 +74,10 @@ public class Trade {
 
 	public int getSeller() {
 		return seller;
+	}
+
+
+	public int getOrderHit() {
+		return orderHit;
 	}
 }
