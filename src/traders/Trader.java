@@ -12,11 +12,12 @@ import lob.*;
  */
 public abstract class Trader {
 	
-	private int tId;
+	protected int tId;
 	private double cash;
 	private int numAssets;
 	private ArrayList<Trade> blotter;
-	private HashMap<Integer, HashMap<String, String>> orders; // key: qId, value: order currently in the book
+	// key: qId, value: order currently in the book
+	public HashMap<Integer, HashMap<String, String>> orders = new HashMap<Integer, HashMap<String, String>>();
 	
 	public Trader(int tId, double cash, int numAssets) {
 		super();
@@ -65,7 +66,7 @@ public abstract class Trader {
 		blotter.add(t);
 	}
 	
-	public abstract HashMap<String, String> getOrder(int time);
+	public abstract void submitOrders(OrderBook lob, int time);
 	
 	public abstract void update(OrderBook lob, Trade trade);
 

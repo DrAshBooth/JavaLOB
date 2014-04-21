@@ -2,6 +2,7 @@ package lob;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.math.BigDecimal;
 import java.io.File;
 import java.io.BufferedWriter;
@@ -16,12 +17,13 @@ import java.io.StringWriter;
  */
 
 public class OrderBook {
-	private ArrayList<Trade> tape = new ArrayList<Trade>();
+	private List<Trade> tape = new ArrayList<Trade>();
 	private OrderTree bids = new OrderTree();
 	private OrderTree asks = new OrderTree();
 	private double tickSize;
 	private int time;
 	private int nextQuoteID = 0;
+	private int lastOrderSign = 1;
 	
 	public OrderBook(double tickSize) {
 		this.tickSize = tickSize;
@@ -70,12 +72,14 @@ public class OrderBook {
 		String side = quote.get("side");
 		int qtyRemaining = Integer.parseInt(quote.get("quantity"));
 		if (side =="bid") {
+			this.lastOrderSign = 1;
 			while ((qtyRemaining > 0) && (this.asks.getnOrders() > 0)) {
 				OrderList ordersAtBest = this.asks.minPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
 			}
 		}else if(side=="offer") {
+			this.lastOrderSign = -1;
 			while ((qtyRemaining > 0) && (this.bids.getnOrders() > 0)) {
 				OrderList ordersAtBest = this.bids.maxPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
@@ -98,6 +102,7 @@ public class OrderBook {
 		int qtyRemaining = Integer.parseInt(quote.get("quantity"));
 		double price = Double.parseDouble(quote.get("price"));
 		if (side=="bid") {
+			this.lastOrderSign = 1;
 			while ((this.asks.getnOrders() > 0) && 
 					(qtyRemaining > 0) && 
 					(price > asks.minPrice())) {
@@ -116,6 +121,7 @@ public class OrderBook {
 				orderInBook = false;
 			}
 		} else if (side=="offer") {
+			this.lastOrderSign = -1;
 			while ((this.bids.getnOrders() > 0) && 
 					(qtyRemaining > 0) && 
 					(price < bids.maxPrice())) {
@@ -251,6 +257,9 @@ public class OrderBook {
 		return asks.maxPrice();
 	}
 	
+	public int getLastOrderSign() {
+		return lastOrderSign;
+	}
 	
 	public void dumpTape(String fName, String tMode) {
 		try {
@@ -267,6 +276,7 @@ public class OrderBook {
 	
 	public String toString() {
 		StringWriter fileStr = new StringWriter();
+		fileStr.write("Time: " + this.time + "\n");
 		fileStr.write(" -------- The Order Book --------\n");
 		fileStr.write("|                                |\n");
 		fileStr.write("|   ------- Bid  Book --------   |\n");

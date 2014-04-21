@@ -2,11 +2,14 @@
 package traders;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Random;
 
 import lob.OrderBook;
 import lob.Trade;
 
 /**
+ * <p>
  * These agents simultaneously post an order on each side of the book, 
  * maintaining an approximately neutral position throughout the day. They make 
  * their income from the difference between their bids and offers. If one or 
@@ -15,38 +18,121 @@ import lob.Trade;
  * a prediction for the sign of the next period’s order using a simple $w$
  * period rolling-mean estimate. When a market maker predicts that a buy order 
  * will arrive next, she will set her sell limit order volume to a uniformly 
- * distributed random number between $v_{min}$ and $v_{max}$ and her buy limit 
- * order volume to 1.
+ * distributed random number between v_min and v_max and her buy limit 
+ * order volume to 1.<br/>
+ * 
+ * When to update orders:
+ * ATM 
+ * If (my prediction has changed since last time) OR (order executed) {
+ * 		delete both and resubmit
+ * }
+ * 
+ * Prices:
+ * ATM
+ * set to current best
+ * 
+ * MUST RUN UPDATE BEFORE GETORDERS()!!!
  * 
  * @author Ash Booth
  *
  */
+
 public class MarketMaker extends Trader {
 
-	private boolean bidInBook = false;
-	private boolean offerInBook = false;
+	private final int rollMeanLen;
+	private final int vMin;
+	private final int vMax;
+	private final int vMinus;
 	
-	public MarketMaker(int tId, double cash, int numAssets) {
+	private Random generator = new Random();
+	private double lastSignPred;
+	private double nextSignPred;
+	private LinkedList<Integer> lastOrderSigns = new LinkedList<Integer>();
+	
+	/**
+	 * @param tId 
+	 * @param cash
+	 * @param numAssets
+	 * @param rollMeanLen	param w in paper window length of rolling mean
+	 * @param vMin			see paper
+	 * @param vMax			see paper
+	 * @param vMinus		see paper
+	 */
+	public MarketMaker(int tId, double cash, int numAssets, 
+					   int rollMeanLen, int vMin, int vMax, int vMinus) {
 		super(tId, cash, numAssets);
-		// TODO Auto-generated constructor stub
+		this.rollMeanLen = rollMeanLen;
+		this.vMin = vMin;
+		this.vMax = vMax;
+		this.vMinus = vMinus;
 	}
 
-	/* (non-Javadoc)
-	 * @see traders.Trader#getOrder(int)
-	 */
 	@Override
-	public HashMap<String, String> getOrder(int time) {
-		// TODO Auto-generated method stub
-		return null;
+	public void submitOrders(OrderBook lob, int time) {
+		if ( (this.orders.size() != 2)  || (nextSignPred != lastSignPred) ) {
+			// remove all current orders from lob
+			for(Integer orderId: this.orders.keySet()) {
+				String side = this.orders.get(orderId).get("side");
+				lob.cancelOrder(side, orderId);
+			}
+			this.orders.clear();
+			
+			// Submit new bid and offer
+			double bidPrice = lob.getBestBid();
+			double offerPrice = lob.getBestOffer();
+			int bidQty, offerQty;
+			if (this.nextSignPred > 0) {
+				// we predict a buy next
+				offerQty = (vMin + generator.nextInt(vMax-vMin+1));
+				bidQty = vMinus;
+			} else {
+				// we predict a sell next
+				bidQty = (vMin + generator.nextInt(vMax-vMin+1));
+				offerQty = vMinus;
+			}
+			// Create bid
+			HashMap<String, String> bid = new HashMap<String, String>();
+			bid.put("timestamp", Integer.toString(time));
+			bid.put("type", "limit");
+			bid.put("side", "bid");
+			bid.put("quantity", Integer.toString(bidQty));
+			bid.put("price", Double.toString(bidPrice));
+			bid.put("tId", Integer.toString(this.tId));
+			
+			// Create offer
+			HashMap<String, String> offer = new HashMap<String, String>();
+			offer.put("timestamp", Integer.toString(time));
+			offer.put("type", "limit");
+			offer.put("side", "offer");
+			offer.put("quantity", Integer.toString(offerQty));
+			offer.put("price", Double.toString(offerPrice));
+			offer.put("tId", Integer.toString(this.tId));
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see traders.Trader#update(lob.OrderBook, lob.Trade)
-	 */
 	@Override
 	public void update(OrderBook lob, Trade trade) {
-		// TODO Auto-generated method stub
-
+		// Update rolling mean estimate of order sign
+		if (lastOrderSigns.size() >= rollMeanLen) {
+			lastOrderSigns.removeFirst();
+		}
+		lastOrderSigns.add(lob.getLastOrderSign());
+		this.predictNextOrderSign();
 	}
+	
+	private void predictNextOrderSign() {
+		this.lastSignPred = this.nextSignPred;
+		double sum = 0;
+		for (int i : lastOrderSigns) {
+			sum += i;
+		}
+		double average = sum/lastOrderSigns.size();
+		if (average >= 0) {
+			this.nextSignPred = 1;
+		} else {
+			this.nextSignPred = -1;
+		}
+	}
+	
 
 }
