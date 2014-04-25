@@ -30,10 +30,13 @@ public class OrderBook {
 	}
 	
 	
+	/**
+	 * Clips price according to tickSize
+	 * 
+	 * @param price
+	 * @return
+	 */
 	private double clipPrice(double price) {
-		/*
-		 * Clips price according to tickSize
-		 */
 		int numDecPlaces = (int)Math.log10(1 / this.tickSize);
 		BigDecimal bd = new BigDecimal(price);
 		BigDecimal rounded = bd.setScale(numDecPlaces, BigDecimal.ROUND_HALF_UP);
@@ -43,7 +46,7 @@ public class OrderBook {
 	
 	public OrderReport processOrder(HashMap<String, String> quote, boolean verbose) {
 		String orderType = quote.get("type");
-		OrderReport oReport = null;
+		OrderReport oReport;
 		// Update time
 		this.time = Integer.parseInt(quote.get("timestamp"));
 		
@@ -59,8 +62,8 @@ public class OrderBook {
 			quote.put("price", String.valueOf(clippedPrice));
 			oReport = processLimitOrder(quote, verbose);
 		} else {
-			System.out.println("processOrder() given neither 'market' nor 'limit'");
-			System.exit(0);
+			throw new IllegalArgumentException("order neither market nor limit: " + 
+											    orderType);
 		}
 		return oReport;
 	}
@@ -86,8 +89,8 @@ public class OrderBook {
 												quote, verbose);
 			}
 		}else {
-			System.out.println("processMarketOrder() given neither bid nor offer");
-			System.exit(0);
+			throw new IllegalArgumentException("order neither market nor limit: " + 
+				    						    side);
 		}
 		OrderReport report = new OrderReport(trades, false);
 		return  report;
@@ -140,8 +143,8 @@ public class OrderBook {
 				orderInBook = false;
 			}
 		} else {
-			System.out.println("processLimitOrder() given neither bid nor offer");
-			System.exit(0);
+			throw new IllegalArgumentException("order neither market nor limit: " + 
+				    						    side);
 		}
 		OrderReport report = new OrderReport(trades, orderInBook);
 		if (orderInBook) {
