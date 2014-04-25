@@ -31,7 +31,7 @@ import lob.Trade;
  * ATM
  * set to current best
  * 
- * MUST RUN UPDATE BEFORE GETORDERS()!!!
+ * MUST RUN UPDATE BEFORE SUBMITORDERS()!!!
  * 
  * @author Ash Booth
  *
@@ -40,7 +40,7 @@ import lob.Trade;
 public class MarketMaker extends Trader {
 
 	private final int rollMeanLen;
-	private final int vMin;
+	private final int vMin; 
 	private final int vMax;
 	private final int vMinus;
 	
@@ -132,6 +132,12 @@ public class MarketMaker extends Trader {
 		} else {
 			this.nextSignPred = -1;
 		}
+	}
+
+	@Override
+	protected void iTraded(boolean bought, double price, int qty) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

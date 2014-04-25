@@ -1,5 +1,8 @@
 package traders;
 
+import java.util.HashMap;
+import java.util.Random;
+
 import lob.OrderBook;
 import lob.Trade;
 
@@ -14,19 +17,32 @@ import lob.Trade;
  * available volume at the best price vt = Φt. For simplicity fundamental 
  * agents are assumed to only utilise market orders.
  * 
+ *  MUST RUN UPDATE BEFORE SUBMITORDERS()!!!
+ * 
  * @author Ash Booth
  *
  */
 public class FundamentalTrader extends Trader {
-
+	
+	private Random generator = new Random();
+	private boolean buying;
+	private int orderMin;
+	private int orderMax;
+	private int orderSize;
+	
 	/**
 	 * @param tId
 	 * @param cash
 	 * @param numAssets
 	 */
-	public FundamentalTrader(int tId, double cash, int numAssets) {
+	public FundamentalTrader(int tId, double cash, 
+						     int numAssets, int orderMin, 
+						     int orderMax) {
 		super(tId, cash, numAssets);
-		// TODO Auto-generated constructor stub
+		this.orderMin = orderMin;
+		this.orderMax = orderMax;
+		
+		refreshOrder();
 	}
 
 	/* (non-Javadoc)
@@ -34,8 +50,22 @@ public class FundamentalTrader extends Trader {
 	 */
 	@Override
 	public void submitOrders(OrderBook lob, int time) {
-		// TODO Auto-generated method stub
-
+		int volAtBest;
+		int orderQty;
+		HashMap<String, String> quote = new HashMap<String, String>();
+		if (buying) {
+			volAtBest = lob.getVolumeAtPrice("offer", lob.getBestOffer());
+			orderQty = (orderSize > volAtBest) ? volAtBest : orderSize;
+			quote.put("side", "bid");
+		} else {
+			volAtBest = lob.getVolumeAtPrice("bid", lob.getBestBid());
+			orderQty = (orderSize > volAtBest) ? volAtBest : orderSize;
+			quote.put("side", "offer");
+		}
+		quote.put("timestamp", Integer.toString(time));
+		quote.put("type", "market");
+		quote.put("quantity", Integer.toString(orderQty));
+		quote.put("tId", Integer.toString(this.tId));
 	}
 
 	/* (non-Javadoc)
@@ -43,8 +73,21 @@ public class FundamentalTrader extends Trader {
 	 */
 	@Override
 	public void update(OrderBook lob, Trade trade) {
-		// TODO Auto-generated method stub
+		// no parameters to update for fundamental trader
+	}
+	
+	private void refreshOrder() {
+		this.buying = generator.nextBoolean(); // randomly assign buy or sell
+		this.orderSize = (orderMin + generator.nextInt(orderMax - orderMin+1));
+	}
 
+	@Override
+	protected void iTraded(boolean bought, double price, int qty) {
+		// TODO Auto-generated method stub
+		this.orderSize -= qty;
+		if (orderSize <=0) {
+			refreshOrder();
+		}
 	}
 
 }

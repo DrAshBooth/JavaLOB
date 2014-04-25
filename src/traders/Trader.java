@@ -46,28 +46,45 @@ public abstract class Trader {
 					orders.get(orderID).put("quatity", Integer.toString(newQty));
 				}
 			} else {
-				System.out.println("Trader told his order was hit but he has no record of the order!");
-				System.exit(0);
+				throw new IllegalStateException("Trader told his order was hit but he has no record of the order!");
 			}
 		}
+		boolean bought;
 		double price = t.getPrice();
 		int qty = t.getQty();
 		if (this.tId==t.getBuyer()) { // am i the buyer?
+			bought = true;
 			this.cash -= (qty*price);
 			this.numAssets += qty;
 		} else if (this.tId == t.getSeller()) { // am I the seller?
+			bought = false;
 			this.cash += (qty*price);
 			this.numAssets -= qty;
 		} else { // WTF?!?!
+			bought = false;
 			System.out.println("Trader has received a trade report " + 
 							   "that he was not part of!!!");
 			System.exit(0);
 		}
 		blotter.add(t);
+		iTraded(bought, price, qty);
 	}
+	
+	/**
+	 * Called as part of bookkeep, some agents need to update specific internal
+	 * Parameters in response to their trades executing.
+	 * @param t
+	 */
+	protected abstract void iTraded(boolean bought, double price, int qty);
 	
 	public abstract void submitOrders(OrderBook lob, int time);
 	
+	/**
+	 * Update the internal parameters of the trader given changes in the lob
+	 * 
+	 * @param lob	// the limit order book
+	 * @param trade	// did a 
+	 */
 	public abstract void update(OrderBook lob, Trade trade);
 
 	@Override
