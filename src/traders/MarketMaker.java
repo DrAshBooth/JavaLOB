@@ -2,8 +2,7 @@
 package traders;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.LinkedList; 
 
 import lob.OrderBook;
 import lob.Trade;
@@ -44,7 +43,6 @@ public class MarketMaker extends Trader {
 	private final int vMax;
 	private final int vMinus;
 	
-	private Random generator = new Random();
 	private double lastSignPred;
 	private double nextSignPred;
 	private LinkedList<Integer> lastOrderSigns = new LinkedList<Integer>();

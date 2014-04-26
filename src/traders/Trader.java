@@ -3,6 +3,7 @@ package traders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import lob.*;
 
@@ -18,6 +19,7 @@ public abstract class Trader {
 	private ArrayList<Trade> blotter;
 	// key: qId, value: order currently in the book
 	public HashMap<Integer, HashMap<String, String>> orders = new HashMap<Integer, HashMap<String, String>>();
+	protected Random generator = new Random();
 	
 	public Trader(int tId, double cash, int numAssets) {
 		super();
@@ -86,6 +88,10 @@ public abstract class Trader {
 	 * @param trade	// did a 
 	 */
 	public abstract void update(OrderBook lob, Trade trade);
+	
+	protected boolean noOrdersInBook() {
+		return this.orders.isEmpty();
+	}
 
 	@Override
 	public String toString() {

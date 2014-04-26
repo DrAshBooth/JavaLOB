@@ -299,4 +299,9 @@ public class OrderBook {
 		fileStr.write("\n --------------------------------\n");
 		return fileStr.toString();
 	}
+
+
+	public double getTickSize() {
+		return tickSize;
+	}
 }

@@ -1,11 +1,22 @@
-package lob;
+package simulation;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.Random;
+
+import lob.OrderBook;
 
 public class Simulation {
 	
-	public static void run() {
+	private static void run() {
 		System.out.println("Beginning simulation...\n");
+		
+		Properties props = getProperties("config.properties");
+		
+		// if book empty, noise traders GO!!!
 		
 		// create quotes
 		HashMap<String, String> quote = new HashMap<String, String>();
@@ -98,8 +109,36 @@ public class Simulation {
 		// View the book
 		print("\n...book after crossing limit order...\n");
 		print(lob.toString());
+		
 
 		System.out.println("\nFinished simulation...");
+	}
+	
+	private static double getPrice(double xmin, double beta) {
+		Random gen = new Random();
+		return xmin*Math.pow((1-gen.nextDouble()), (-1/(beta-1)));
+	}
+	
+	private static Properties getProperties(String filename) {
+		// http://www.mkyong.com/java/java-properties-file-examples/
+		FileInputStream in = null;	
+		Properties prop = null;
+		try {
+			in = new FileInputStream(filename);
+			prop = new Properties();
+			prop.load(in);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return prop;
 	}
 	
 	public static void print(String string) {
@@ -107,6 +146,10 @@ public class Simulation {
 	}
 	
 	public static void main(String[] args) {
-		run();
+		double xmin = 0.05;
+		double beta = 2.72;
+		for (int i = 0; i<10; i++)
+			System.out.println(getPrice(xmin,beta));
+		//run();
 	}
 }
