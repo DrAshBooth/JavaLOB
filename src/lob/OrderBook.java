@@ -264,6 +264,21 @@ public class OrderBook {
 		return lastOrderSign;
 	}
 	
+	public int volumeOnSide(String side) {
+		if (side=="bid") {
+			return this.bids.getVolume();
+		} else if (side=="offer") {
+			return this.asks.getVolume();
+		} else {
+			throw new IllegalArgumentException("order neither market nor limit: " + 
+				    							side);
+		}
+	}
+	
+	public double getTickSize() {
+		return tickSize;
+	}
+	
 	public void dumpTape(String fName, String tMode) {
 		try {
 			File dumpFile = new File(fName);
@@ -300,8 +315,4 @@ public class OrderBook {
 		return fileStr.toString();
 	}
 
-
-	public double getTickSize() {
-		return tickSize;
-	}
 }

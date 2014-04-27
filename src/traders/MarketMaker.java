@@ -1,6 +1,7 @@
 
 package traders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList; 
 
@@ -66,7 +67,8 @@ public class MarketMaker extends Trader {
 	}
 
 	@Override
-	public void submitOrders(OrderBook lob, int time) {
+	public ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time) {
+		ArrayList<HashMap<String, String>> ordersToGo = new ArrayList<HashMap<String, String>>();
 		if ( (this.orders.size() != 2)  || (nextSignPred != lastSignPred) ) {
 			// remove all current orders from lob
 			for(Integer orderId: this.orders.keySet()) {
@@ -88,6 +90,7 @@ public class MarketMaker extends Trader {
 				bidQty = (vMin + generator.nextInt(vMax-vMin+1));
 				offerQty = vMinus;
 			}
+			// TODO add bid and offer to list of submitted quotes
 			// Create bid
 			HashMap<String, String> bid = new HashMap<String, String>();
 			bid.put("timestamp", Integer.toString(time));
@@ -105,7 +108,11 @@ public class MarketMaker extends Trader {
 			offer.put("quantity", Integer.toString(offerQty));
 			offer.put("price", Double.toString(offerPrice));
 			offer.put("tId", Integer.toString(this.tId));
+			
+			ordersToGo.add(bid);
+			ordersToGo.add(offer);
 		}
+		return ordersToGo;
 	}
 
 	@Override

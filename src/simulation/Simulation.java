@@ -17,6 +17,8 @@ public class Simulation {
 		Properties props = getProperties("config.properties");
 		
 		// if book empty, noise traders GO!!!
+		// TODO clearing function that adds orders to traders orderLists and bookkeeps
+		
 		
 		// create quotes
 		HashMap<String, String> quote = new HashMap<String, String>();

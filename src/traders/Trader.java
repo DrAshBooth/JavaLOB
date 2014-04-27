@@ -3,6 +3,7 @@ package traders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import lob.*;
@@ -18,7 +19,8 @@ public abstract class Trader {
 	private int numAssets;
 	private ArrayList<Trade> blotter;
 	// key: qId, value: order currently in the book
-	public HashMap<Integer, HashMap<String, String>> orders = new HashMap<Integer, HashMap<String, String>>();
+	public HashMap<Integer, HashMap<String, String>> orders = 
+								new HashMap<Integer, HashMap<String, String>>();
 	protected Random generator = new Random();
 	
 	public Trader(int tId, double cash, int numAssets) {
@@ -72,6 +74,19 @@ public abstract class Trader {
 		iTraded(bought, price, qty);
 	}
 	
+	protected HashMap<String, String> oldestOrder() {
+		int oldestID = -1;
+		int oldestTime = Integer.MAX_VALUE;
+		for (Map.Entry<Integer, HashMap<String, String>> entry : orders.entrySet()) {
+			int quoteTime = Integer.parseInt(entry.getValue().get("timestamp"));
+			if (quoteTime< oldestTime) {
+				oldestTime = quoteTime;
+				oldestID = entry.getKey();
+			}
+		}
+		return orders.get(oldestID);
+	}
+	
 	/**
 	 * Called as part of bookkeep, some agents need to update specific internal
 	 * Parameters in response to their trades executing.
@@ -79,7 +94,7 @@ public abstract class Trader {
 	 */
 	protected abstract void iTraded(boolean bought, double price, int qty);
 	
-	public abstract void submitOrders(OrderBook lob, int time);
+	public abstract ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time);
 	
 	/**
 	 * Update the internal parameters of the trader given changes in the lob

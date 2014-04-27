@@ -1,5 +1,6 @@
 package traders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -26,8 +27,10 @@ public class FundamentalTrader extends Trader {
 	
 	private Random generator = new Random();
 	private boolean buying;
-	private int orderMin;
-	private int orderMax;
+	
+	private final int orderMin;
+	private final int orderMax;
+	
 	private int orderSize;
 	
 	/**
@@ -49,7 +52,8 @@ public class FundamentalTrader extends Trader {
 	 * @see traders.Trader#submitOrders(lob.OrderBook, int)
 	 */
 	@Override
-	public void submitOrders(OrderBook lob, int time) {
+	public ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time) {
+		ArrayList<HashMap<String, String>> ordersToGo = new ArrayList<HashMap<String, String>>();
 		int volAtBest;
 		int orderQty;
 		HashMap<String, String> quote = new HashMap<String, String>();
@@ -66,6 +70,8 @@ public class FundamentalTrader extends Trader {
 		quote.put("type", "market");
 		quote.put("quantity", Integer.toString(orderQty));
 		quote.put("tId", Integer.toString(this.tId));
+		ordersToGo.add(quote);
+		return ordersToGo;
 	}
 
 	/* (non-Javadoc)
