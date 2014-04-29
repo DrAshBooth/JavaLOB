@@ -1,10 +1,8 @@
 package traders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import lob.OrderBook;
-import lob.Trade;
+import lob.*;
 
 /**
  * The noise agents randomly decide on whether to buy or sell in each period 
@@ -85,125 +83,104 @@ public class NoiseTrader extends Trader {
 	}
 
 	@Override
-	public ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time) {
-		ArrayList<HashMap<String, String>> ordersToGo = 
-				new ArrayList<HashMap<String, String>>();
+	public ArrayList<Order> getOrders(OrderBook lob, int time) {
+		ArrayList<Order> ordersToGo = 
+				new ArrayList<Order>();
 		if ((lob.volumeOnSide("bid")==0) || (lob.volumeOnSide("offer")==0) ) {
 			populateBook(lob, ordersToGo, time);
 		} else {
 			// Usual NT logic
-			HashMap<String, String> quote = new HashMap<String, String>();
-			quote.put("timestamp", Integer.toString(time));
-			quote.put("tId", Integer.toString(this.tId));
 			String side = ((generator.nextBoolean()) ? "bid" : "offer");
-			quote.put("side", side);
 			double p = generator.nextDouble();
 			if (p < prob_market) {
 				// market order
 				int vol;
-				quote.put("type", "market");
 				vol = (int)Math.round(Math.exp(market_mu+
 										(market_sigma*generator.nextDouble())));
 				// Order does not consume more than half opposing vol
 				String opposingSide = (side=="bid") ? "offer" : "bid";
 				int halfOppVol = lob.volumeOnSide(opposingSide)/2;
 				vol = ( (vol < halfOppVol) ? vol : halfOppVol );
-				quote.put("quantity", Integer.toString(vol));
-				ordersToGo.add(quote);
+				ordersToGo.add(new Order(time, false, vol, tId, side));
 			} else if ((p < (prob_market+prob_limit)) || noOrdersInBook()) {
 				// limit order
-				limitOrder(lob,quote);
-				ordersToGo.add(quote);
+				ordersToGo.add(limitOrder(lob,side, time));
 			} else {
 				// cancel order
-				HashMap<String, String> oldestOrder = oldestOrder();
-				lob.cancelOrder(oldestOrder.get("side"), 
-								Integer.parseInt(oldestOrder.get("qId")));
-				this.orders.remove(oldestOrder.get("qId"));
+				Order oldestOrder = oldestOrder();
+				lob.cancelOrder(oldestOrder.getSide(), 
+								oldestOrder.getqId());
+				this.orders.remove(oldestOrder.getqId());
 			}
 		}
 		return ordersToGo;
 	}
 	
 	private void populateBook(OrderBook lob, 
-							  ArrayList<HashMap<String, String>> ordersToGo,
+							  ArrayList<Order> ordersToGo,
 							  int time) {
-		HashMap<String, String> bid = new HashMap<String, String>();
-		bid.put("timestamp", Integer.toString(time));
-		bid.put("tId", Integer.toString(this.tId));
-		HashMap<String, String> offer = new HashMap<String, String>();
-		offer.put("timestamp", Integer.toString(time));
-		offer.put("tId", Integer.toString(this.tId));
+		Order bid;
+		Order offer;
 		if ((lob.volumeOnSide("bid")==0) && (lob.volumeOnSide("offer")==0)) {
 			// bid
-			bid.put("side", "bid");
-			bid.put("price", Double.toString(default_price));
-			int vol = (int)Math.round(Math.exp(limit_mu+
+			int volB = (int)Math.round(Math.exp(limit_mu+
 										(limit_sigma*generator.nextDouble())));
-			bid.put("quantity", Integer.toString(vol));
+			bid = new Order(time, true, volB, tId, "bid", default_price);
 			// offer
-			offer.put("side", "offer");
-			offer.put("price", Double.toString(default_price+default_spread));
-			int vol2 = (int)Math.round(Math.exp(limit_mu+
+			int volO = (int)Math.round(Math.exp(limit_mu+
 										(limit_sigma*generator.nextDouble())));
-			offer.put("quantity", Integer.toString(vol2));
+			offer = new Order(time, true, volO, tId, "offer", default_price+default_spread);
 			ordersToGo.add(bid);
 			ordersToGo.add(offer);
 		} else if (lob.volumeOnSide("bid")==0) {
 			// submit a bid
-			bid.put("side", "bid");
-			bid.put("price", Double.toString(lob.getBestOffer()-default_spread));
+			double price = lob.getBestOffer()-default_spread;
 			int vol = (int)Math.round(Math.exp(limit_mu+
 										(limit_sigma*generator.nextDouble())));
-			bid.put("quantity", Integer.toString(vol));
+			bid = new Order(time, true, vol, tId, "bid", price);
 			ordersToGo.add(bid);
 		} else if (lob.volumeOnSide("offer")==0){
 			// submit an ask
-			offer.put("side", "offer");
-			offer.put("price", Double.toString(lob.getBestBid()+default_spread));
+			double price = lob.getBestBid()+default_spread;
 			int vol = (int)Math.round(Math.exp(limit_mu+
 										(limit_sigma*generator.nextDouble())));
-			offer.put("quantity", Integer.toString(vol));
+			offer = new Order(time, true, vol, tId, "offer", price);
 			ordersToGo.add(offer);
 		} 
 	}
 	
-	private void limitOrder(OrderBook lob, HashMap<String, String> quote) {
+	private Order limitOrder(OrderBook lob, String side, int time) {
 		int vol;
-		String side = quote.get("side");
+		double price;
 		double bestBid = lob.getBestBid();
 		double bestOffer = lob.getBestOffer();
-		quote.put("type", "limit");
 		double p2 = generator.nextDouble();
 		if (p2 < prob_cross) {
 			// Crossing limit order
-			double oppositeBest = ((side == "bid") ? 
+			price = ((side == "bid") ? 
 								   bestOffer : bestBid);
-			quote.put("price", Double.toString(oppositeBest));
 		} else if (p2 < (prob_cross+prob_inside)) {
 			// Limit order inside the spread (U distributed)
 			double increment = generator.nextDouble()*(bestOffer-bestBid);
-			quote.put("price", Double.toString(bestBid+increment));
+			price = bestBid+increment;
 		} else if (p2 < (prob_cross+prob_inside+prob_at)) {
 			// Limit order at best
-			double bestPrice = ((side=="bid") ?
+			price = ((side=="bid") ?
 								bestBid : bestOffer);
-			quote.put("price", Double.toString(bestPrice));
 		} else {
 			// Limit order deep in book
 			double deviate = xmin*Math.pow( (1-generator.nextDouble()), 
 										   (-1/(beta-1)) );
-			double quotePrice = ((side=="bid") ?
-					bestBid-deviate : bestOffer+deviate);
-			quote.put("price", Double.toString(quotePrice));
+			price = ((side=="bid") ?
+					 bestBid-deviate : bestOffer+deviate);
 		}
 		vol = (int)Math.round(Math.exp(limit_mu+
 										(limit_sigma*generator.nextDouble())));
-		quote.put("quantity", Integer.toString(vol));
+		return new Order(time, true, vol, tId, side, price);
 	}
 
 	@Override
-	public void update(OrderBook lob, Trade trade) {
+	public void update(OrderBook lob) {
 		
 	}
 

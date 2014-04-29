@@ -19,8 +19,7 @@ public abstract class Trader {
 	private int numAssets;
 	private ArrayList<Trade> blotter;
 	// key: qId, value: order currently in the book
-	public HashMap<Integer, HashMap<String, String>> orders = 
-								new HashMap<Integer, HashMap<String, String>>();
+	public HashMap<Integer, Order> orders = new HashMap<Integer, Order>();
 	protected Random generator = new Random();
 	
 	public Trader(int tId, double cash, int numAssets) {
@@ -30,8 +29,8 @@ public abstract class Trader {
 		this.numAssets = numAssets;
 	}
 	
-	public void addOrder(HashMap<String, String> order) {
-		int qId = Integer.valueOf(order.get("qId"));
+	public void addOrder(Order order) {
+		int qId = order.getqId();
 		orders.put(qId, order);
 	}
 	
@@ -43,12 +42,9 @@ public abstract class Trader {
 		if (this.tId == t.getProvider()) { // if my order was sat in the book
 			int orderID = t.getOrderHit(); // Which order was affected 
 			if (orders.containsKey(orderID)) {
-				int originalQty = Integer.parseInt(orders.get(orderID).get("quantity"));
-				if (originalQty < t.getQty()) { // whole order hit
+				int originalQty = orders.get(orderID).getQuantity();
+				if (originalQty <= t.getQty()) { // whole order hit
 					orders.remove(orderID);
-				} else { // smaller order remains
-					int newQty = originalQty - t.getQty();
-					orders.get(orderID).put("quatity", Integer.toString(newQty));
 				}
 			} else {
 				throw new IllegalStateException("Trader told his order was hit but he has no record of the order!");
@@ -75,11 +71,11 @@ public abstract class Trader {
 		iTraded(bought, price, qty);
 	}
 	
-	protected HashMap<String, String> oldestOrder() {
+	protected Order oldestOrder() {
 		int oldestID = -1;
 		int oldestTime = Integer.MAX_VALUE;
-		for (Map.Entry<Integer, HashMap<String, String>> entry : orders.entrySet()) {
-			int quoteTime = Integer.parseInt(entry.getValue().get("timestamp"));
+		for (Map.Entry<Integer, Order> entry : orders.entrySet()) {
+			int quoteTime = entry.getValue().getTimestamp();
 			if (quoteTime< oldestTime) {
 				oldestTime = quoteTime;
 				oldestID = entry.getKey();
@@ -95,7 +91,7 @@ public abstract class Trader {
 	 */
 	protected abstract void iTraded(boolean bought, double price, int qty);
 	
-	public abstract ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time);
+	public abstract ArrayList<Order> getOrders(OrderBook lob, int time);
 	
 	/**
 	 * Update the internal parameters of the trader given changes in the lob
@@ -103,7 +99,7 @@ public abstract class Trader {
 	 * @param lob	// the limit order book
 	 * @param trade	// did a 
 	 */
-	public abstract void update(OrderBook lob, Trade trade);
+	public abstract void update(OrderBook lob);
 	
 	protected boolean noOrdersInBook() {
 		return this.orders.isEmpty();

@@ -57,9 +57,9 @@ public class OrderTree {
 		return orderMap.containsKey(id);
 	}
 	
-	public void insertOrder(HashMap<String, String> quote) {
-		int quoteID = Integer.parseInt(quote.get("qId"));
-		double quotePrice = Double.parseDouble(quote.get("price"));
+	public void insertOrder(Order quote) {
+		int quoteID = quote.getqId();
+		double quotePrice = quote.getPrice();
 		if (orderExists(quoteID)) {
 			removeOrderByID(quoteID);
 		}
@@ -67,10 +67,10 @@ public class OrderTree {
 		if (!priceExists(quotePrice)) {
 			createPrice(quotePrice);
 		}
-		Order o = new Order(quote, priceMap.get(quotePrice));
-		priceMap.get(o.getPrice()).appendOrder(o);
-		orderMap.put(o.getqId(), o);
-		volume += o.getQuantity();
+		quote.setoL(priceMap.get(quotePrice));
+		priceMap.get(quotePrice).appendOrder(quote);
+		orderMap.put(quoteID, quote);
+		volume += quote.getQuantity();
 	}
 	
 	public void updateOrderQty(int qty, int qId) {
@@ -80,22 +80,23 @@ public class OrderTree {
 		this.volume += (order.getQuantity() - originalVol);
 	}
 	
-	public void updateOrder(HashMap<String, String> orderUpdate) {
-		int idNum = Integer.parseInt(orderUpdate.get("qId"));
-		double price = Double.parseDouble(orderUpdate.get("price"));
+	public void updateOrder(Order orderUpdate) {
+		int idNum = orderUpdate.getqId();
+		double price = orderUpdate.getPrice();
 		Order order = this.orderMap.get(idNum);
 		int originalVol = order.getQuantity();
 		if (price != order.getPrice()) {
 			// Price has been updated
 			OrderList tempOL = this.priceMap.get(order.getPrice());
+			tempOL.removeOrder(order);
 			if (tempOL.getLength()==0) {
 				removePrice(order.getPrice());
 			}
 			insertOrder(orderUpdate);
 		} else {
 			// The quantity has changed
-			order.updateQty(Integer.parseInt(orderUpdate.get("quantity")), 
-					Integer.parseInt(orderUpdate.get("timestamp")));
+			order.updateQty(orderUpdate.getQuantity(), 
+					orderUpdate.getTimestamp());
 		}
 		this.volume += (order.getQuantity() - originalVol);
 	}

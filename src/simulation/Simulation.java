@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
 
+import lob.Order;
 import lob.OrderBook;
 
 public class Simulation {
@@ -17,47 +18,14 @@ public class Simulation {
 		// if book empty, noise traders GO!!!
 		// TODO clearing function that adds orders to traders orderLists and bookkeeps
 		
+		//time, true, volO, tId, "offer", default_price+default_spread
 		
-		// create quotes
-		HashMap<String, String> quote = new HashMap<String, String>();
-		quote.put("timestamp", "1");
-		quote.put("type", "limit");
-		quote.put("side", "offer");
-		quote.put("quantity", "2");
-		quote.put("price", "17.4");
-		quote.put("tId", "100");
-		
-		HashMap<String, String> quote1 = new HashMap<String, String>();
-		quote1.put("timestamp", "2");
-		quote1.put("type", "limit");
-		quote1.put("side", "offer");
-		quote1.put("quantity", "10");
-		quote1.put("price", "17.4");
-		quote1.put("tId", "101");
-		
-		HashMap<String, String> quote2 = new HashMap<String, String>();
-		quote2.put("timestamp", "3");
-		quote2.put("type", "limit");
-		quote2.put("side", "offer");
-		quote2.put("quantity", "15");
-		quote2.put("price", "17.6");
-		quote2.put("tId", "102");
-		
-		HashMap<String, String> quote3 = new HashMap<String, String>();
-		quote3.put("timestamp", "4");
-		quote3.put("type", "limit");
-		quote3.put("side", "bid");
-		quote3.put("quantity", "5");
-		quote3.put("price", "16.899999");
-		quote3.put("tId", "103");
-		
-		HashMap<String, String> quote4 = new HashMap<String, String>();
-		quote4.put("timestamp", "5");
-		quote4.put("type", "limit");
-		quote4.put("side", "bid");
-		quote4.put("quantity", "5");
-		quote4.put("price", "16.9");
-		quote4.put("tId", "104");
+		// create limit quotes
+		Order quote = new Order(1, true, 2, 100, "offer", 17.4);
+		Order quote1 = new Order(2, true, 10, 101, "offer", 17.4);
+		Order quote2 = new Order(3, true, 15, 102, "offer", 17.6);
+		Order quote3 = new Order(4, true, 5, 103, "bid", 16.89999);
+		Order quote4 = new Order(5, true, 5, 104, "bid", 16.9);
 		
 		// instantiate order book
 		OrderBook lob = new OrderBook(0.01);
@@ -80,12 +48,7 @@ public class Simulation {
 		
 		// Market order
 		print("\n...submitting market order...\n");
-		HashMap<String, String> quote5 = new HashMap<String, String>();
-		quote5.put("timestamp", "6");
-		quote5.put("type", "market");
-		quote5.put("side", "bid");
-		quote5.put("quantity", "1");
-		quote5.put("tId", "105");
+		Order quote5 = new Order(6, false, 1, 105, "bid");
 		
 		lob.processOrder(quote5, false);
 		
@@ -93,16 +56,9 @@ public class Simulation {
 		print("\n...book after MO...\n");
 		print(lob.toString());
 		
-		
 		// Crossing limit order
 		print("\n...submitting limit order that crosses the spread...\n");
-		HashMap<String, String> quote6 = new HashMap<String, String>();
-		quote6.put("timestamp", "7");
-		quote6.put("type", "limit");
-		quote6.put("side", "bid");
-		quote6.put("price", "100000");
-		quote6.put("quantity", "3");
-		quote6.put("tId", "106");
+		Order quote6 = new Order(7, true, 3, 106, "bid", 100000.0);
 		
 		lob.processOrder(quote6, false);
 		
@@ -110,7 +66,6 @@ public class Simulation {
 		print("\n...book after crossing limit order...\n");
 		print(lob.toString());
 		
-
 		System.out.println("\nFinished simulation...");
 	}
 	

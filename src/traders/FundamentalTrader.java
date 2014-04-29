@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import lob.OrderBook;
-import lob.Trade;
-
+import lob.*;
 /**
  * These agents are either buying or selling a large order of stock over the 
  * course of a day. Whether these agents are buying or selling is assigned with
@@ -52,25 +50,21 @@ public class FundamentalTrader extends Trader {
 	 * @see traders.Trader#submitOrders(lob.OrderBook, int)
 	 */
 	@Override
-	public ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time) {
-		ArrayList<HashMap<String, String>> ordersToGo = new ArrayList<HashMap<String, String>>();
+	public ArrayList<Order> getOrders(OrderBook lob, int time) {
+		ArrayList<Order> ordersToGo = new ArrayList<Order>();
 		int volAtBest;
+		String side;
 		int orderQty;
-		HashMap<String, String> quote = new HashMap<String, String>();
 		if (buying) {
 			volAtBest = lob.getVolumeAtPrice("offer", lob.getBestOffer());
 			orderQty = (orderSize > volAtBest) ? volAtBest : orderSize;
-			quote.put("side", "bid");
+			side = "bid";
 		} else {
 			volAtBest = lob.getVolumeAtPrice("bid", lob.getBestBid());
 			orderQty = (orderSize > volAtBest) ? volAtBest : orderSize;
-			quote.put("side", "offer");
+			side = "offer";
 		}
-		quote.put("timestamp", Integer.toString(time));
-		quote.put("type", "market");
-		quote.put("quantity", Integer.toString(orderQty));
-		quote.put("tId", Integer.toString(this.tId));
-		ordersToGo.add(quote);
+		ordersToGo.add(new Order(time, false, orderQty, tId, side));
 		return ordersToGo;
 	}
 
@@ -78,7 +72,7 @@ public class FundamentalTrader extends Trader {
 	 * @see traders.Trader#update(lob.OrderBook, lob.Trade)
 	 */
 	@Override
-	public void update(OrderBook lob, Trade trade) {
+	public void update(OrderBook lob) {
 		// no parameters to update for fundamental trader
 	}
 	

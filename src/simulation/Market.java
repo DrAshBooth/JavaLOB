@@ -26,7 +26,7 @@ public class Market {
 	
 	private OrderBook lob;
 	private List<Trade> tape = new ArrayList<Trade>();
-	private List<HashMap<String,String>> quoteCollector = new ArrayList<HashMap<String,String>>();
+	private List<Order> quoteCollector = new ArrayList<Order>();
 	
 	private Random generator = new Random();
 	
@@ -80,13 +80,17 @@ public class Market {
 				tdr = tradersById.get(randTId);
 				submitOrder(tdr,time);
 			}
+			//update all traders
+			for (int tId : tIds) {
+				tradersById.get(tId).update(lob);
+			}
 		}
 	}
 	
 	private void submitOrder(Trader tdr, int time) {
-		ArrayList<HashMap<String,String>> quotes;
+		ArrayList<Order> quotes;
 		quotes = tdr.getOrders(lob, time);
-		for (HashMap<String,String> q : quotes) {
+		for (Order q : quotes) {
 			// add sign of order to orderSigns list
 			quoteCollector.add(q);
 			OrderReport orderRep = lob.processOrder(q, false);
@@ -168,17 +172,17 @@ public class Market {
 			File dumpFile = new File(dataDir+fName);
 			BufferedWriter output = new BufferedWriter(new FileWriter(dumpFile));
 			output.write("time, type, side, quantity, price, tId\n");
-			for (HashMap<String,String> q : quoteCollector) {
-				String quoteString = (q.get("timestamp") + ", " +
-										q.get("type") + ", " + 
-										q.get("side") + ", " +
-										q.get("quantity") + ", ");
-				if (q.get("type")=="limit") {
-					quoteString += q.get("price");
+			for (Order q : quoteCollector) {
+				String quoteString = (q.getTimestamp() + ", " +
+										(q.isLimit() ? "limit" : "market") + ", " + 
+										q.getSide() + ", " +
+										q.getQuantity() + ", ");
+				if (q.isLimit()) {
+					quoteString += q.getPrice();
 				} else {
 					quoteString += "\t";
 				}
-				quoteString += (", " + q.get("tId") + "\n");
+				quoteString += (", " + q.gettId() + "\n");
 				output.write(quoteString);
 			}
 			output.close();

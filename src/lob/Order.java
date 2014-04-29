@@ -1,10 +1,11 @@
 package lob;
 
-import java.util.HashMap;
 
 public class Order {
 	private int timestamp;
+	private boolean limit;
 	private int quantity;
+	private String side;
 	private double price;
 	private int qId;
 	private int tId;
@@ -12,13 +13,19 @@ public class Order {
 	private Order prevOrder;
 	private OrderList oL;
 	
-	public Order(HashMap<String,String> quote, OrderList ol) {
-		this.timestamp = Integer.parseInt(quote.get("timestamp"));
-		this.quantity = Integer.parseInt(quote.get("quantity"));
-		this.price = Double.parseDouble(quote.get("price"));
-		this.qId = Integer.parseInt(quote.get("qId"));
-		this.tId = Integer.parseInt(quote.get("tId"));
-		this.oL = ol;
+	public Order(int time, boolean limit, int quantity, int tId, String side) {
+		this(time, limit, quantity, tId, side, null);
+	}	
+	
+	public Order(int time, boolean limit, int quantity, 
+				int tId, String side, Double price) {
+		
+		this.timestamp = time;
+		this.limit = limit;
+		this.side = side;
+		this.quantity = quantity;
+		this.price = (double)price;
+		this.tId = tId;
 	}
 	
 	public void updateQty(int qty, int tstamp) {
@@ -96,6 +103,18 @@ public class Order {
 
 	public OrderList getoL() {
 		return oL;
+	}
+
+	public boolean isLimit() {
+		return limit;
+	}
+
+	public String getSide() {
+		return side;
+	}
+
+	public void setoL(OrderList oL) {
+		this.oL = oL;
 	}
 	
 	

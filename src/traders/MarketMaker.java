@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList; 
 
-import lob.OrderBook;
-import lob.Trade;
+import lob.*;
 
 /**
  * <p>
@@ -67,12 +66,12 @@ public class MarketMaker extends Trader {
 	}
 
 	@Override
-	public ArrayList<HashMap<String, String>> getOrders(OrderBook lob, int time) {
-		ArrayList<HashMap<String, String>> ordersToGo = new ArrayList<HashMap<String, String>>();
+	public ArrayList<Order> getOrders(OrderBook lob, int time) {
+		ArrayList<Order> ordersToGo = new ArrayList<Order>();
 		if ( (this.orders.size() != 2)  || (nextSignPred != lastSignPred) ) {
 			// remove all current orders from lob
 			for(Integer orderId: this.orders.keySet()) {
-				String side = this.orders.get(orderId).get("side");
+				String side = this.orders.get(orderId).getSide();
 				lob.cancelOrder(side, orderId);
 			}
 			this.orders.clear();
@@ -90,33 +89,14 @@ public class MarketMaker extends Trader {
 				bidQty = (vMin + generator.nextInt(vMax-vMin+1));
 				offerQty = vMinus;
 			}
-			// TODO add bid and offer to list of submitted quotes
-			// Create bid
-			HashMap<String, String> bid = new HashMap<String, String>();
-			bid.put("timestamp", Integer.toString(time));
-			bid.put("type", "limit");
-			bid.put("side", "bid");
-			bid.put("quantity", Integer.toString(bidQty));
-			bid.put("price", Double.toString(bidPrice));
-			bid.put("tId", Integer.toString(this.tId));
-			
-			// Create offer
-			HashMap<String, String> offer = new HashMap<String, String>();
-			offer.put("timestamp", Integer.toString(time));
-			offer.put("type", "limit");
-			offer.put("side", "offer");
-			offer.put("quantity", Integer.toString(offerQty));
-			offer.put("price", Double.toString(offerPrice));
-			offer.put("tId", Integer.toString(this.tId));
-			
-			ordersToGo.add(bid);
-			ordersToGo.add(offer);
+			ordersToGo.add(new Order(time, true, bidQty, tId, "bid", bidPrice));
+			ordersToGo.add(new Order(time, true, offerQty, tId, "offer", offerPrice));
 		}
 		return ordersToGo;
 	}
 
 	@Override
-	public void update(OrderBook lob, Trade trade) {
+	public void update(OrderBook lob) {
 		// Update rolling mean estimate of order sign
 		if (lastOrderSigns.size() >= rollMeanLen) {
 			lastOrderSigns.removeFirst();

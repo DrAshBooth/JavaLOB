@@ -38,36 +38,29 @@ public class OrderBook {
 	}
 	
 	
-	public OrderReport processOrder(HashMap<String, String> quote, boolean verbose) {
-		String orderType = quote.get("type");
+	public OrderReport processOrder(Order quote, boolean verbose) {
+		boolean isLimit = quote.isLimit();
 		OrderReport oReport;
 		// Update time
-		this.time = Integer.parseInt(quote.get("timestamp"));
-		
-		if (Integer.parseInt(quote.get("quantity")) <= 0 ) {
-			System.out.println("processOrder() given qty <= 0");
-			System.exit(0);
+		this.time = quote.getTimestamp();
+		if (quote.getQuantity() <= 0 ) {
+			throw new IllegalArgumentException("processOrder() given qty <= 0");
 		}
-		
-		if (orderType == "market") {
-			oReport = processMarketOrder(quote, verbose);
-		} else if (orderType == "limit") {
-			double clippedPrice = clipPrice(Double.parseDouble(quote.get("price")));
-			quote.put("price", String.valueOf(clippedPrice));
+		if (isLimit) {
+			double clippedPrice = clipPrice(quote.getPrice());
+			quote.setPrice(clippedPrice);
 			oReport = processLimitOrder(quote, verbose);
 		} else {
-			throw new IllegalArgumentException("order neither market nor limit: " + 
-											    orderType);
+			oReport = processMarketOrder(quote, verbose);
 		}
 		return oReport;
 	}
 	
 	
-	private OrderReport processMarketOrder(HashMap<String, String> quote, 
-										  boolean verbose) {
+	private OrderReport processMarketOrder(Order quote, boolean verbose) {
 		ArrayList<Trade> trades = new ArrayList<Trade>();
-		String side = quote.get("side");
-		int qtyRemaining = Integer.parseInt(quote.get("quantity"));
+		String side = quote.getSide();
+		int qtyRemaining = quote.getQuantity();
 		if (side =="bid") {
 			this.lastOrderSign = 1;
 			while ((qtyRemaining > 0) && (this.asks.getnOrders() > 0)) {
@@ -91,13 +84,13 @@ public class OrderBook {
 	}
 	
 	
-	private OrderReport processLimitOrder(HashMap<String, String> quote, 
+	private OrderReport processLimitOrder(Order quote, 
 										  boolean verbose) {
 		boolean orderInBook = false;
 		ArrayList<Trade> trades = new ArrayList<Trade>();
-		String side = quote.get("side");
-		int qtyRemaining = Integer.parseInt(quote.get("quantity"));
-		double price = Double.parseDouble(quote.get("price"));
+		String side = quote.getSide();
+		int qtyRemaining = quote.getQuantity();
+		double price = quote.getPrice();
 		if (side=="bid") {
 			this.lastOrderSign = 1;
 			while ((this.asks.getnOrders() > 0) && 
@@ -109,8 +102,8 @@ public class OrderBook {
 			}
 			// If volume remains, add order to book
 			if (qtyRemaining > 0) {
-				quote.put("qId", Integer.toString(this.nextQuoteID));
-				quote.put("quantity", Integer.toString(qtyRemaining));
+				quote.setqId(this.nextQuoteID);
+				quote.setQuantity(qtyRemaining);
 				this.bids.insertOrder(quote);
 				orderInBook = true;
 				this.nextQuoteID+=1;
@@ -128,8 +121,8 @@ public class OrderBook {
 			}
 			// If volume remains, add to book
 			if (qtyRemaining > 0) {
-				quote.put("qId", Integer.toString(this.nextQuoteID));
-				quote.put("quantity", Integer.toString(qtyRemaining));
+				quote.setqId(this.nextQuoteID);
+				quote.setQuantity(qtyRemaining);
 				this.asks.insertOrder(quote);
 				orderInBook = true;
 				this.nextQuoteID+=1;
@@ -149,12 +142,12 @@ public class OrderBook {
 	
 	
 	private int processOrderList(ArrayList<Trade> trades, OrderList orders,
-								int qtyRemaining, HashMap<String, String> quote,
+								int qtyRemaining, Order quote,
 								boolean verbose) {
-		String side = quote.get("side");
+		String side = quote.getSide();
 		int buyer, seller;
-		int takerId = Integer.parseInt(quote.get("tId"));
-		int time = Integer.parseInt(quote.get("timestamp"));
+		int takerId = quote.gettId();
+		int time = quote.getTimestamp();
 		while ((orders.getLength()>0) && (qtyRemaining>0)) {
 			int qtyTraded = 0;
 			Order headOrder = orders.getHeadOrder();
