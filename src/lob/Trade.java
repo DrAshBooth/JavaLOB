@@ -33,7 +33,16 @@ public class Trade {
 				"\n| \tBuyer = " + buyer +
 				"\n| \tSeller = " + seller);
 	}
-
+	
+	public String toCSV() {
+		return (timestamp + ", " + 
+				price + ", " + 
+				qty + ", " + 
+				provider + ", " + 
+				taker + ", " + 
+				buyer + ", " + 
+				seller + "\n");
+	}
 
 
 	public int getTimestamp() {

@@ -26,11 +26,15 @@ public class Market {
 	
 	private OrderBook lob;
 	private List<Trade> tape = new ArrayList<Trade>();
+	private List<HashMap<String,String>> quoteCollector = new ArrayList<HashMap<String,String>>();
 	
 	private Random generator = new Random();
 	
-	public Market(Properties prop) {
+	private String dataDir;
+	
+	public Market(Properties prop, String dataDir) {
 		super();
+		this.dataDir = dataDir;
 		this.n_NTs = Integer.valueOf(prop.getProperty("n_NTs"));
 		this.n_MMs = Integer.valueOf(prop.getProperty("n_MMs"));
 		this.n_FTs = Integer.valueOf(prop.getProperty("n_FTs"));
@@ -62,11 +66,11 @@ public class Market {
 					   Integer.valueOf(prop.getProperty("FT_orderMax")));
 	}
 	
-	public void run(int timesteps) {
+	public void run(int timesteps, boolean NT_ONLY) {
 		for (int time = 1; time <= timesteps; time++) {
 			Trader tdr;
 			// if either book empty, pick NT to trade
-			if ((lob.volumeOnSide("bid")==0) || (lob.volumeOnSide("offer")==0)) {
+			if ((lob.volumeOnSide("bid")==0) || (lob.volumeOnSide("offer")==0) || NT_ONLY) {
 				int ntIdx = generator.nextInt(tradersByType.get("NT").size());
 				tdr = tradersByType.get("NT").get(ntIdx);
 				submitOrder(tdr,time); // deals with clearing and bookkeeping
@@ -80,10 +84,12 @@ public class Market {
 	}
 	
 	private void submitOrder(Trader tdr, int time) {
-		ArrayList<HashMap<String,String>> orders;
-		orders = tdr.getOrders(lob, time);
-		for (HashMap<String,String> o : orders) {
-			OrderReport orderRep = lob.processOrder(o, false);
+		ArrayList<HashMap<String,String>> quotes;
+		quotes = tdr.getOrders(lob, time);
+		for (HashMap<String,String> q : quotes) {
+			// add sign of order to orderSigns list
+			quoteCollector.add(q);
+			OrderReport orderRep = lob.processOrder(q, false);
 			clearing(tdr,orderRep);
 		}
 	}
@@ -153,17 +159,51 @@ public class Market {
 		this.tIds = new ArrayList<Integer>(tradersById.keySet());
 	}
 	
-	public void dumpTape(String fName, String tMode) {
+	/**************************************************************************
+	 *************************** Writing and Printing *************************
+	 **************************************************************************/
+	
+	public void quotesToCSV(String fName) {
 		try {
-			File dumpFile = new File(fName);
+			File dumpFile = new File(dataDir+fName);
 			BufferedWriter output = new BufferedWriter(new FileWriter(dumpFile));
-			for (Trade t : tape) {
-				output.write(t.toString());
+			output.write("time, type, side, quantity, price, tId\n");
+			for (HashMap<String,String> q : quoteCollector) {
+				String quoteString = (q.get("timestamp") + ", " +
+										q.get("type") + ", " + 
+										q.get("side") + ", " +
+										q.get("quantity") + ", ");
+				if (q.get("type")=="limit") {
+					quoteString += q.get("price");
+				} else {
+					quoteString += "\t";
+				}
+				quoteString += (", " + q.get("tId") + "\n");
+				output.write(quoteString);
 			}
 			output.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void tapeToCSV(String fName) {
+		try {
+			File dumpFile = new File(dataDir+fName);
+			BufferedWriter output = new BufferedWriter(new FileWriter(dumpFile));
+			output.write("time, price, quantity, provider, taker, buyer, seller\n");
+			for (Trade t : tape) {
+				output.write(t.toCSV());
+			}
+			output.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void writeDaysData(String tradeDataName, String quoteDataName) {
+		tapeToCSV(tradeDataName);
+		quotesToCSV(quoteDataName);
 	}
 	
 	public String toString() {

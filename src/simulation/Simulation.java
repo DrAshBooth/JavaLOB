@@ -117,9 +117,9 @@ public class Simulation {
 	
 	private static void marketTrial( ) {
 		Properties prop = getProperties("config.properties");
-		Market mkt = new Market(prop);
-		
-		
+		Market mkt = new Market(prop, "/Users/user/Desktop/");
+		mkt.run(5, true);
+		mkt.writeDaysData("trades.csv", "quotes.csv");
 	}
 	
 	
