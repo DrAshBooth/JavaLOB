@@ -2,12 +2,7 @@ package lob;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.math.BigDecimal;
-import java.io.File;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.StringWriter;
 
 /*
@@ -17,7 +12,6 @@ import java.io.StringWriter;
  */
 
 public class OrderBook {
-	private List<Trade> tape = new ArrayList<Trade>();
 	private OrderTree bids = new OrderTree();
 	private OrderTree asks = new OrderTree();
 	private double tickSize;
@@ -194,7 +188,6 @@ public class OrderBook {
 									headOrder.gettId(),takerId, buyer, seller, 
 									headOrder.getqId());
 			trades.add(trade);
-			this.tape.add(trade);
 			if (verbose) {
 				System.out.println(trade);
 			}
@@ -279,19 +272,6 @@ public class OrderBook {
 		return tickSize;
 	}
 	
-	public void dumpTape(String fName, String tMode) {
-		try {
-			File dumpFile = new File(fName);
-			BufferedWriter output = new BufferedWriter(new FileWriter(dumpFile));
-			for (Trade t : tape) {
-				output.write(t.toString());
-			}
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public String toString() {
 		StringWriter fileStr = new StringWriter();
 		fileStr.write("Time: " + this.time + "\n");
@@ -304,12 +284,6 @@ public class OrderBook {
 		fileStr.write("|   ------ Offer  Book -------   |\n");
 		if (asks.getnOrders() > 0) {
 			fileStr.write(asks.toString());
-		}
-		fileStr.write("|   -------- Trades  ---------   |");
-		if (!tape.isEmpty()) {
-			for (Trade t : tape) {
-				fileStr.write(t.toString());
-			}
 		}
 		fileStr.write("\n --------------------------------\n");
 		return fileStr.toString();

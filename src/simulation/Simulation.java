@@ -14,8 +14,6 @@ public class Simulation {
 	private static void run() {
 		System.out.println("Beginning simulation...\n");
 		
-		Properties props = getProperties("config.properties");
-		
 		// if book empty, noise traders GO!!!
 		// TODO clearing function that adds orders to traders orderLists and bookkeeps
 		
@@ -116,10 +114,14 @@ public class Simulation {
 		System.out.println("\nFinished simulation...");
 	}
 	
-	private static double getPrice(double xmin, double beta) {
-		Random gen = new Random();
-		return xmin*Math.pow((1-gen.nextDouble()), (-1/(beta-1)));
+	
+	private static void marketTrial( ) {
+		Properties prop = getProperties("config.properties");
+		Market mkt = new Market(prop);
+		
+		
 	}
+	
 	
 	private static Properties getProperties(String filename) {
 		// http://www.mkyong.com/java/java-properties-file-examples/
@@ -141,6 +143,8 @@ public class Simulation {
 			}
 		}
 		return prop;
+		
+		
 	}
 	
 	public static void print(String string) {
@@ -148,10 +152,7 @@ public class Simulation {
 	}
 	
 	public static void main(String[] args) {
-		double xmin = 0.05;
-		double beta = 2.72;
-		for (int i = 0; i<10; i++)
-			System.out.println(getPrice(xmin,beta));
 		//run();
+		marketTrial();
 	}
 }

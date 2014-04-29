@@ -20,8 +20,12 @@ public class OrderReport {
 		this.orderInBook = orderInBook;
 	}
 
-	public HashMap<String, String> getOrders() {
+	public HashMap<String, String> getOrder() {
 		return order;
+	}
+	
+	public void setOrder(HashMap<String, String> order) {
+		this.order = order;
 	}
 
 	public ArrayList<Trade> getTrades() {
@@ -30,10 +34,6 @@ public class OrderReport {
 
 	public boolean isOrderInBook() {
 		return orderInBook;
-	}
-
-	public void setOrder(HashMap<String, String> order) {
-		this.order = order;
 	}
 	
 	public String toString() {

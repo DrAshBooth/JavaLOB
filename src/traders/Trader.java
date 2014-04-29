@@ -30,7 +30,8 @@ public abstract class Trader {
 		this.numAssets = numAssets;
 	}
 	
-	public void addOrder(int qId, HashMap<String, String> order) {
+	public void addOrder(HashMap<String, String> order) {
+		int qId = Integer.valueOf(order.get("qId"));
 		orders.put(qId, order);
 	}
 	
