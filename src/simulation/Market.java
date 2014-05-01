@@ -84,7 +84,7 @@ public class Market {
 				tradersById.get(tId).update(lob);
 			}
 			if (verbose) {
-				this.toString();
+				System.out.println(this.toString());
 			}
 		}
 	}
@@ -214,6 +214,7 @@ public class Market {
 	public String toString() {
 		StringWriter fileStr = new StringWriter();
 		fileStr.write(lob.toString());
+		fileStr.write("Traders:\n");
 		for (int tId : tIds) {
 			fileStr.write(tradersById.get(tId).toString());
 		}

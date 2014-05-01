@@ -109,7 +109,8 @@ public class NoiseTrader extends Trader {
 				// cancel order
 				Order oldestOrder = oldestOrder();
 				lob.cancelOrder(oldestOrder.getSide(), 
-								oldestOrder.getqId());
+								oldestOrder.getqId(),
+								time);
 				this.orders.remove(oldestOrder.getqId());
 			}
 		}

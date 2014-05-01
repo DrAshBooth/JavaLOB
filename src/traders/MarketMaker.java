@@ -72,7 +72,7 @@ public class MarketMaker extends Trader {
 			// remove all current orders from lob
 			for(Integer orderId: this.orders.keySet()) {
 				String side = this.orders.get(orderId).getSide();
-				lob.cancelOrder(side, orderId);
+				lob.cancelOrder(side, orderId, time);
 			}
 			this.orders.clear();
 			

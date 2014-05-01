@@ -18,7 +18,7 @@ public abstract class Trader {
 	protected int tId;
 	private double cash;
 	private int numAssets;
-	private ArrayList<Trade> blotter;
+	private ArrayList<Trade> blotter = new ArrayList<Trade>();
 	// key: qId, value: order currently in the book
 	public HashMap<Integer, Order> orders = new HashMap<Integer, Order>();
 	protected Random generator = new Random();
@@ -40,6 +40,8 @@ public abstract class Trader {
 	}
 	
 	public void bookkeep(Trade t) {
+		// sometimes NTs will trade with themselves. need to catch that below
+		boolean nt_buyerANDseller = ( (t.getBuyer()==this.tId) && (t.getSeller()==this.tId));
 		if (this.tId == t.getProvider()) { // if my order was sat in the book
 			int orderID = t.getOrderHit(); // Which order was affected 
 			if (orders.containsKey(orderID)) {
@@ -47,7 +49,7 @@ public abstract class Trader {
 				if (originalQty <= t.getQty()) { // whole order hit
 					orders.remove(orderID);
 				}
-			} else {
+			} else if (!nt_buyerANDseller) {
 				throw new IllegalStateException("Trader told his order was hit but he has no record of the order!");
 			}
 		}

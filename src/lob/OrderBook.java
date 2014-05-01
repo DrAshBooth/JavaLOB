@@ -192,7 +192,8 @@ public class OrderBook {
 	}
 	
 	
-	public void cancelOrder(String side, int qId) {
+	public void cancelOrder(String side, int qId, int time) {
+		this.time = time;
 		if (side=="bid") {
 			if (bids.orderExists(qId)) {
 				bids.removeOrderByID(qId);
