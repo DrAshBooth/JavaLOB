@@ -25,7 +25,6 @@ public class Market {
 	private final int n_FTs;
 	
 	private OrderBook lob;
-	private List<Trade> tape = new ArrayList<Trade>();
 	private List<Order> quoteCollector = new ArrayList<Order>();
 	
 	private Random generator = new Random();
@@ -66,11 +65,11 @@ public class Market {
 					   Integer.valueOf(prop.getProperty("FT_orderMax")));
 	}
 	
-	public void run(int timesteps, boolean NT_ONLY) {
+	public void run(int timesteps, boolean verbose) {
 		for (int time = 1; time <= timesteps; time++) {
 			Trader tdr;
 			// if either book empty, pick NT to trade
-			if ((lob.volumeOnSide("bid")==0) || (lob.volumeOnSide("offer")==0) || NT_ONLY) {
+			if ((lob.volumeOnSide("bid")==0) || (lob.volumeOnSide("offer")==0)) {
 				int ntIdx = generator.nextInt(tradersByType.get("NT").size());
 				tdr = tradersByType.get("NT").get(ntIdx);
 				submitOrder(tdr,time); // deals with clearing and bookkeeping
@@ -83,6 +82,9 @@ public class Market {
 			//update all traders
 			for (int tId : tIds) {
 				tradersById.get(tId).update(lob);
+			}
+			if (verbose) {
+				this.toString();
 			}
 		}
 	}
@@ -112,7 +114,6 @@ public class Market {
 			quotingTrader.addOrder(orderRep.getOrder());
 		}
 		for (Trade t : orderRep.getTrades()) {
-			tape.add(t);
 			Trader buyer = tradersById.get(t.getBuyer());
 			Trader seller = tradersById.get(t.getSeller());
 			buyer.bookkeep(t);
@@ -196,7 +197,7 @@ public class Market {
 			File dumpFile = new File(dataDir+fName);
 			BufferedWriter output = new BufferedWriter(new FileWriter(dumpFile));
 			output.write("time, price, quantity, provider, taker, buyer, seller\n");
-			for (Trade t : tape) {
+			for (Trade t : lob.getTape()) {
 				output.write(t.toCSV());
 			}
 			output.close();
@@ -213,12 +214,9 @@ public class Market {
 	public String toString() {
 		StringWriter fileStr = new StringWriter();
 		fileStr.write(lob.toString());
-		if (!tape.isEmpty()) {
-			for (Trade t : tape) {
-				fileStr.write(t.toString());
-			}
+		for (int tId : tIds) {
+			fileStr.write(tradersById.get(tId).toString());
 		}
-		fileStr.write("\n --------------------------------\n");
 		return fileStr.toString();
 	}
 

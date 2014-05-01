@@ -1,9 +1,10 @@
 package lob;
 
+import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.math.BigDecimal;
-import java.io.StringWriter;
+import java.util.List;
 
 /*
  * TODO:
@@ -12,6 +13,7 @@ import java.io.StringWriter;
  */
 
 public class OrderBook {
+	private List<Trade> tape = new ArrayList<Trade>();
 	private OrderTree bids = new OrderTree();
 	private OrderTree asks = new OrderTree();
 	private double tickSize;
@@ -181,6 +183,7 @@ public class OrderBook {
 									headOrder.gettId(),takerId, buyer, seller, 
 									headOrder.getqId());
 			trades.add(trade);
+			this.tape.add(trade);
 			if (verbose) {
 				System.out.println(trade);
 			}
@@ -278,8 +281,19 @@ public class OrderBook {
 		if (asks.getnOrders() > 0) {
 			fileStr.write(asks.toString());
 		}
+		fileStr.write("|   -------- Trades  ---------   |");
+		if (!tape.isEmpty()) {
+			for (Trade t : tape) {
+				fileStr.write(t.toString());
+			}
+		}
 		fileStr.write("\n --------------------------------\n");
 		return fileStr.toString();
+	}
+
+
+	public List<Trade> getTape() {
+		return tape;
 	}
 
 }

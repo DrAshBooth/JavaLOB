@@ -24,7 +24,9 @@ public class Order {
 		this.limit = limit;
 		this.side = side;
 		this.quantity = quantity;
-		this.price = (double)price;
+		if (price!=null) {
+			this.price = (double)price;
+		}
 		this.tId = tId;
 	}
 	

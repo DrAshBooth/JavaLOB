@@ -1,6 +1,7 @@
 
 package traders;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,9 +108,14 @@ public abstract class Trader {
 
 	@Override
 	public String toString() {
-		return "Trader [tId=" + tId + ", cash=" + cash + ", numAssets="
-				+ numAssets + ", blotter=" + blotter + ", orders=" + orders
-				+ "]";
+		StringWriter fileStr = new StringWriter();
+		fileStr.write(" -------- Trader " + tId + "--------\n");
+		fileStr.write(" Cash = " + cash + "\n");
+		fileStr.write(" Number of assets = " + numAssets + "\n");
+		fileStr.write(" Blotter:\n" + blotter + "\n");
+		fileStr.write(" Orders currently in book:\n" + orders);
+		fileStr.write("\n --------------------------------\n");
+		return fileStr.toString();
 	}
 	
 }

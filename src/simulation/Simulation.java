@@ -3,22 +3,16 @@ package simulation;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Properties;
-import java.util.Random;
+
 
 import lob.Order;
 import lob.OrderBook;
 
 public class Simulation {
 	
-	private static void run() {
+	private static void testLob() {
 		System.out.println("Beginning simulation...\n");
-		
-		// if book empty, noise traders GO!!!
-		// TODO clearing function that adds orders to traders orderLists and bookkeeps
-		
-		//time, true, volO, tId, "offer", default_price+default_spread
 		
 		// create limit quotes
 		Order quote = new Order(1, true, 2, 100, "offer", 17.4);
@@ -107,7 +101,7 @@ public class Simulation {
 	}
 	
 	public static void main(String[] args) {
-		//run();
+		//testLob();
 		marketTrial();
 	}
 }
