@@ -97,7 +97,7 @@ public class OrderBook {
 			this.lastOrderSign = 1;
 			while ((this.asks.getnOrders() > 0) && 
 					(qtyRemaining > 0) && 
-					(price > asks.minPrice())) {
+					(price >= asks.minPrice())) {
 				OrderList ordersAtBest = asks.minPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
@@ -108,6 +108,7 @@ public class OrderBook {
 				quote.setQuantity(qtyRemaining);
 				this.bids.insertOrder(quote);
 				orderInBook = true;
+				System.out.println(quote.getqId());
 				this.nextQuoteID+=1;
 			} else {
 				orderInBook = false;
@@ -116,7 +117,8 @@ public class OrderBook {
 			this.lastOrderSign = -1;
 			while ((this.bids.getnOrders() > 0) && 
 					(qtyRemaining > 0) && 
-					(price < bids.maxPrice())) {
+					(price <= bids.maxPrice())) {
+				System.out.println("Limit trade at: " + time);
 				OrderList ordersAtBest = bids.maxPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
@@ -127,6 +129,7 @@ public class OrderBook {
 				quote.setQuantity(qtyRemaining);
 				this.asks.insertOrder(quote);
 				orderInBook = true;
+				System.out.println(quote.getqId());
 				this.nextQuoteID+=1;
 			} else {
 				orderInBook = false;
@@ -267,6 +270,10 @@ public class OrderBook {
 	
 	public double getTickSize() {
 		return tickSize;
+	}
+	
+	public double getSpread() {
+		return this.asks.minPrice()-this.bids.maxPrice();
 	}
 	
 	public String toString() {
