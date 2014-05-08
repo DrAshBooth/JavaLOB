@@ -34,15 +34,17 @@ public class Order {
 		if ((qty > this.quantity) && (this.oL.getTailOrder() != this)) {
 			// Move order to the end of the list. i.e. loses time priority
 			this.oL.moveTail(this);
+			this.timestamp = tstamp;
 		}
 		oL.setVolume(oL.getVolume()-(this.quantity-qty));
-		this.timestamp = tstamp;
 		this.quantity = qty;
 	}
 	
 	public String toString() {
         return Integer.toString(quantity) + "\t@\t" + Double.toString(price) + 
-        		"\tt=" + Integer.toString(timestamp);
+        		"\tt=" + Integer.toString(timestamp) + 
+        		"\tqId=" + Integer.toString(qId) +
+        		"\ttId=" + Integer.toString(tId);
     }
 
 	

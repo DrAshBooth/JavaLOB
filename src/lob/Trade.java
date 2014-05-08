@@ -25,13 +25,13 @@ public class Trade {
 	
 	@Override
 	public String toString() {
-		return ("\n| TRADE \n| \tt= " + timestamp + 
-				"\n| \tprice = " + price +
-				"\n| \tquantity = " + qty +
-				"\n| \tProvider = " + provider +
-				"\n| \tTaker = " + taker +
-				"\n| \tBuyer = " + buyer +
-				"\n| \tSeller = " + seller);
+		return ("\n| TRADE\tt= " + timestamp + 
+				"\tprice = " + price +
+				"\tquantity = " + qty +
+				"\tProvider = " + provider +
+				"\tTaker = " + taker +
+				"\tBuyer = " + buyer +
+				"\tSeller = " + seller);
 	}
 	
 	public String toCSV() {
