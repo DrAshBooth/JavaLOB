@@ -108,7 +108,6 @@ public class OrderBook {
 				quote.setQuantity(qtyRemaining);
 				this.bids.insertOrder(quote);
 				orderInBook = true;
-				System.out.println(quote.getqId());
 				this.nextQuoteID+=1;
 			} else {
 				orderInBook = false;
@@ -118,7 +117,6 @@ public class OrderBook {
 			while ((this.bids.getnOrders() > 0) && 
 					(qtyRemaining > 0) && 
 					(price <= bids.maxPrice())) {
-				System.out.println("Limit trade at: " + time);
 				OrderList ordersAtBest = bids.maxPriceList();
 				qtyRemaining = processOrderList(trades, ordersAtBest, qtyRemaining,
 												quote, verbose);
@@ -129,7 +127,6 @@ public class OrderBook {
 				quote.setQuantity(qtyRemaining);
 				this.asks.insertOrder(quote);
 				orderInBook = true;
-				System.out.println(quote.getqId());
 				this.nextQuoteID+=1;
 			} else {
 				orderInBook = false;
