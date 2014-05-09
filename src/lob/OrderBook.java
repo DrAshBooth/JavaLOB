@@ -273,6 +273,14 @@ public class OrderBook {
 		return this.asks.minPrice()-this.bids.maxPrice();
 	}
 	
+	public double getMid() {
+		return this.getBestBid()+(this.getSpread()/2.0);
+	}
+	
+	public boolean bidsAndAsksExist() {
+		return ((this.bids.nOrders>0)&&(this.asks.nOrders>0));
+	}
+	
 	public String toString() {
 		StringWriter fileStr = new StringWriter();
 		fileStr.write("Time: " + this.time + "\n");
