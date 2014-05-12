@@ -18,11 +18,21 @@ public class OrderBook {
 	private OrderTree asks = new OrderTree();
 	private double tickSize;
 	private int time;
-	private int nextQuoteID = 0;
-	private int lastOrderSign = 1;
+	private int nextQuoteID;
+	private int lastOrderSign;
 	
 	public OrderBook(double tickSize) {
 		this.tickSize = tickSize;
+		this.reset();
+	}
+	
+	public void reset() {
+		tape.clear();
+		bids.reset();
+		asks.reset();
+		time = 0;
+		nextQuoteID = 0;
+		lastOrderSign=1;
 	}
 	
 	

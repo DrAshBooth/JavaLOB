@@ -13,6 +13,13 @@ public class OrderTree {
 	int depth;
 	
 	public OrderTree() {
+		reset();
+	}
+	
+	public void reset() {
+		priceTree.clear();
+		priceMap.clear();
+		orderMap.clear();
 		volume = 0;
 		nOrders = 0;
 		depth = 0;
