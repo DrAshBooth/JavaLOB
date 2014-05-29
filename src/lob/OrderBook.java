@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/*
- * TODO:
- * - Assign qid and update next qid in an addToBook method.
- * -
- */
+// TODO for precision, change prices from double to java.math.BigDecimal
 
 public class OrderBook {
 	private List<Trade> tape = new ArrayList<Trade>();
@@ -220,7 +216,7 @@ public class OrderBook {
 	
 	
 	public void modifyOrder(int qId, HashMap<String, String> quote) {
-		// TODO
+		// TODO implement modify order
 		// Remember if price is changed must check for clearing.
 	}
 	
